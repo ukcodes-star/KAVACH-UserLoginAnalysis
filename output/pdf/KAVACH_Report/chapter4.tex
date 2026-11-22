@@ -1,0 +1,82 @@
+\chapter{Functioning of the System}
+\section{Registration and Authentication}
+Registration trims the username, normalizes email, checks duplicates, and encodes the password. It creates an active USER account, saves an audit event, and returns safe fields. Login checks passwords with BCrypt, a one-way hashing scheme.
+
+An unknown username produces an audit failure and an unauthorized response, with no user-linked login record. A known inactive account is blocked, and the service attempts to record a failed login. It also records failed telemetry for an active account with an incorrect password. Valid credentials produce a JWT, a success audit entry, and successful login telemetry.
+
+JWT represents claims in the format defined by RFC 7519 \cite{jwt}. The browser attaches the token to later requests. The backend validates it and rechecks the current account state. Browser logout clears local authentication data; it does not revoke the token on the server.
+
+\section{Telemetry Recording}
+The recording method has a \code{REQUIRES_NEW} annotation to preserve telemetry independently of a failed authentication transaction. It supplies missing IP, device, and location values, saves the event, and invokes detection. The caller catches recording exceptions, allowing the main login response to proceed if recording fails.
+
+Administrators can create demonstration events with a user ID, timestamp, IP address, device, location, and status. Rules that use event time read the supplied login timestamp, including a historical one. Any resulting anomaly receives a separate timestamp when it is detected.
+
+\section{Detection Engine}
+\begin{table}[htbp]\centering\small\caption{Detection conditions and fixed weights.}\label{tab:rules}
+\begin{tabularx}{\textwidth}{lYrr}\toprule Rule & Trigger & Weight & Severity\\\midrule
+Failed login & Status is FAILED. & 20 & LOW\\
+Unusual time & Login hour is at least 0 and less than 5. & 25 & LOW\\
+Inactive user & Account active flag is false. & 80 & CRITICAL\\
+New IP & More than one event and no other event has the same non-null IP. & 40 & MEDIUM\\
+New device & More than one event and no other event has the same device, ignoring case. & 30 & MEDIUM\\
+Brute force & Failed event with at least five failures after ten minutes before its timestamp. & 70 & HIGH\\\bottomrule\end{tabularx}\end{table}
+
+The detector evaluates all six rules sequentially. A failed login at an unusual hour can produce two anomalies, plus another if it meets the brute-force threshold. Weights are constants without dataset-based probability calibration.
+
+\subsection{Historical Baselines}
+The IP and device rules search the account's stored history, excluding the current event by ID. Both require more than one event, so the first establishes a baseline without triggering either alert. Comparisons use all stored history, including failed events. Device matching ignores case.
+
+The inactive-account rule reads a Boolean flag; it does not calculate dormancy from the last successful login. The IP rule supplies neither geolocation nor reputation information. Device strings identify reported client values without authenticating hardware.
+
+\subsection{Time Windows and Duplicates}
+For a failed event at $t_e$, the repository counts failures with $t_{login}>t_e-10\text{ minutes}$. The query has no upper bound $t_{login}\leq t_e$. With chronological live events, this approximates a recent ten-minute count. For a backdated event, later records can also enter the count.
+
+Before saving, the detector checks for the same user ID, anomaly type, and login-event ID to prevent duplicates during sequential reanalysis. Concurrent requests could both pass this check. A unique constraint or locking policy needs verification under concurrent execution.
+
+\section{Risk Calculation}
+Let $A_u(t)$ be the anomalies detected for user $u$ after $t-24$ hours, with stored weight $w_a$. The user risk score is
+\begin{equation}R_u(t)=\min\left(100,\sum_{a\in A_u(t)}w_a\right).\end{equation}
+Scores below 30 are LOW, 30--59 are MEDIUM, 60--79 are HIGH, and 80 or above are CRITICAL. The risky-user count includes accounts whose recent sum is at least 60. The watchlist query groups anomalies by account, caps each score at 100, sorts in descending order, and returns up to ten accounts.
+
+If a failed login also has an unseen IP address and device, the three matching rules contribute $20+40+30=90$, placing the account in the CRITICAL tier. This calculation illustrates the scoring logic and is not an observed attack result. Even the maximum score of 100 does not mean a 100 percent probability of compromise.
+
+\section{Dashboard Composition}
+The dashboard presents risk, login analytics, a watchlist, and recent critical anomalies. Some counts cover all stored records, account risk covers 24 hours, and the trend covers seven days. These periods matter when comparing figures. Global counts and watchlist accounts lead into detailed investigation.
+
+\section{Two-Loop AI Orchestration}
+An agent request contains a prompt and may include context, a role, steering messages, and follow-ups. The service creates a local conversation, execution-step lists, and queues populated from the request. The outer loop starts an inner invocation and then processes the supplied follow-ups.
+
+
+At the start of each inner iteration, the service adds at most one queued steering message to the conversation. The model or fallback planner returns text and any tool calls. The service resolves each tool by name, executes it, and adds its result or error to the conversation for the next cycle. The inner loop can finish when no tool calls or steering remain, and each invocation has a six-iteration limit.
+
+Each follow-up starts another inner invocation. The final response contains text, execution steps, tool names, loop counts, mode, model, and completion time. Investigator and operator specializations affect behavior within one service and conversation; they do not run as separate agents.
+
+Steering and follow-ups are fixed when the request begins. This execution path has no channel for messages typed while it is running, so live steering requires further work. Tools run sequentially, including those whose metadata declares parallel safety.
+
+\section{Security Tools Registry}
+\begingroup\small\setstretch{1.1}\setlength{\parskip}{0pt}
+\begin{longtable}{>{\raggedright\arraybackslash}p{7cm}>{\raggedright\arraybackslash}p{7.3cm}}
+\caption{Thirteen registered tools.}\label{tab:tools}\\\toprule Tool & Purpose\\\midrule\endfirsthead
+\toprule Tool & Purpose\\\midrule\endhead
+\code{get_dashboard_security_metrics} & Combined dashboard metrics.\\
+\code{list_anomalies} & Recent anomalies, optional severity and limit.\\
+\code{get_anomaly_details} & Anomaly and linked login metadata.\\
+\code{explain_anomaly} & Structured AI explanation.\\
+\code{get_user_risk_profile} & Account's recent risk.\\
+\code{get_top_risky_users} & Ranked watchlist.\\
+\code{query_login_telemetry} & Login records and outcomes.\\
+\code{simulate_login_event} & Insert an event and invoke detection.\\
+\code{get_user_directory} & Directory information.\\
+\code{update_user_account_status} & Activate or deactivate an account.\\
+\code{create_directory_user} & Provision an account.\\
+\code{query_audit_trail} & Audit records with optional filters.\\
+\code{generate_security_summary} & AI-assisted security summary.\\\bottomrule
+\end{longtable}
+\endgroup
+
+Each tool declares an argument schema, role, and safety metadata. Execution still needs argument validation and authorization for the caller, action, and resource. Permissions for operational tools must cover state changes as well as reads.
+
+\section{Explanations, Fallback, and Audit}
+Dedicated anomaly analysis checks resource access before requesting structured JSON with a summary, explanation, indicators, implications, recommendations, and confidence. If the provider or parser fails, it produces a deterministic advisory response. Analysis history saves the result and an advisory flag.
+
+Operational tools can change account status and save audit events; their authorization needs separate assessment from advisory recommendations. OWASP logging guidance provides criteria for event selection, protection, and verification \cite{owasp}. The existing database logs have no demonstrated tamper evidence.

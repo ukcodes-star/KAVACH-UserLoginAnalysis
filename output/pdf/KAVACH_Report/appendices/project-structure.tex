@@ -1,0 +1,40 @@
+\chapter{Project Structure}
+\section{Repository Organization}
+The REST backend and browser frontend occupy separate directories. This tree lists the implementation files and folders, excluding generated builds, installed dependencies, and local configuration values.
+\begingroup\footnotesize\setstretch{1.0}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+UserLoginProject/
+  login-analysis-backend/
+    pom.xml, mvnw, mvnw.cmd
+    src/main/java/com/loginanalysis/
+      LoginAnalysisBackendApplication.java
+      config/       JWT filter, security, passwords, AI setup
+      controller/   REST entry points
+      dto/          Request and response contracts
+      entity/       JPA model
+      repository/   Queries and aggregates
+      service/      Business logic
+      agent/
+        TwoLoopAgentService.java
+        model/      Roles, messages, tools, execution steps
+        tools/      SecurityToolsRegistry.java
+      util/         Provider and request helpers
+      exception/    Application errors
+    src/main/resources/application.properties
+    src/test/java/com/loginanalysis/
+      LoginAnalysisBackendApplicationTests.java
+  login-analysis-frontend/
+    package.json, vite.config.js
+    public/
+    src/
+      App.jsx, main.jsx
+      api/          HTTP client and feature APIs
+      context/      Authentication and theme
+      pages/        Feature pages
+      components/   Layout and reusable UI
+      utils/        Logging and animation
+      assets/
+\end{lstlisting}
+\endgroup
+
+

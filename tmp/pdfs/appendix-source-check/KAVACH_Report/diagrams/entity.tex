@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+\dn{store}{users}{0}{0}{5.6}{\textbf{users}\\\rule{5.4cm}{.3pt}\\\scriptsize\begin{tabular}{@{}l@{}}PK id : Long\\username : String [unique, required]\\email : String [unique, required]\\password : String [required, hash]\\active : Boolean [required]\\role : UserRole [required]\\createdAt : LocalDateTime [required]\end{tabular}}
+\dn{store}{logs}{8.4}{0}{5.6}{\textbf{user\_login\_logs}\\\rule{5.4cm}{.3pt}\\\scriptsize\begin{tabular}{@{}l@{}}PK id : Long\\FK user\_id [required]\\login\_time : LocalDateTime [required]\\ip\_address : String [required]\\device : String [optional]\\location : String [optional]\\status : LoginStatus [required]\end{tabular}}
+\dn{store}{anomalies}{8.4}{-6.8}{5.6}{\textbf{anomalies}\\\rule{5.4cm}{.3pt}\\\scriptsize\begin{tabular}{@{}l@{}}PK id : Long\\FK user\_id [required]\\FK login\_log\_id [required]\\anomalyType : AnomalyType\\description : String\\riskScore : Integer\\severity : Severity\\detectedAt : LocalDateTime\end{tabular}}
+\dn{store}{history}{0}{-8.4}{5.6}{\textbf{ai\_analysis\_history}\\\rule{5.4cm}{.3pt}\\\scriptsize\begin{tabular}{@{}l@{}}PK id : Long\\FK user\_id [optional]\\FK anomaly\_id [optional]\\cachedUserId, cachedAnomalyId\\username, analysisType\\summary, riskExplanation [TEXT]\\indicatorsJson [TEXT]\\recommendationsJson [TEXT]\\confidence, threatLevel, model\\isAdvisory : Boolean\\createdAt : LocalDateTime\end{tabular}}
+\dn{store}{audit}{8.4}{-13.6}{5.6}{\textbf{audit\_logs}\\\rule{5.4cm}{.3pt}\\\scriptsize\begin{tabular}{@{}l@{}}PK id : Long\\username : String\\action : String [required]\\details : String [length 1000]\\ipAddress : String\\timestamp : LocalDateTime [required]\end{tabular}}
+\draw[assoc] (users.east)--node[edge,above,pos=.2]{1}node[edge,above,pos=.8]{0..*}(logs.west);
+\draw[assoc] (logs.south)--node[edge,right,pos=.2]{1}node[edge,right,pos=.8]{0..*}(anomalies.north);
+\draw[assoc] (users.south)--node[edge,left,pos=.12]{0..1}node[edge,left,pos=.88]{0..*}(history.north);
+\draw[assoc] (users.east)--(4.1,0)--(4.1,-6.8)--node[edge,above,pos=.8]{0..*}(anomalies.west);
+\node[edge] at (4.1,-1) {1};
+\draw[assoc] (anomalies.west)--node[edge,above,pos=.15]{0..1}node[edge,below,pos=.85]{0..*}(history.east);
+\dn{note}{key}{0}{-14.3}{5.6}{\scriptsize\textbf{Key:} PK = primary key; FK = foreign key; 0..* = zero or many. Required user/login links enforce ownership references. Cached identifiers and audit username are not foreign keys.}
+\end{tikzpicture}

@@ -1,0 +1,9 @@
+\chapter{Design Analysis}
+\section{Layered Design and Access Boundaries}
+Controllers receive validated HTTP inputs, services coordinate business operations, and JPA repositories access entities and aggregate queries. DTOs define API contracts. React pages share authentication/theme state and an Axios client \cite{repo}.
+
+The security chain permits authentication routes and protects other requests. The JWT filter validates tokens, resolves the current account, rejects inactive users, and installs its role. Method security and selected ownership checks restrict resources \cite{spring}. Registry tools form a separate service entry path and require equivalent policy.
+
+The API client uses JSON, bearer credentials, and a 30-second timeout; unauthorized responses clear stored session state. Multi-cycle agent requests require coordinated timeout, cancellation, and retry behavior. Appendix C summarizes direct endpoint scopes.
+
+\input{diagrams/design-views}

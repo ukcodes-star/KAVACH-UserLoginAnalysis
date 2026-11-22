@@ -1,0 +1,373 @@
+[
+  {
+    "page": 1,
+    "chars": 225,
+    "start": "KA V ACH: USER LOGIN ANALYSIS USING\nLLM\nMaster of Computer Applications Project Report\nUmakant Yadav (24MCA026",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 2,
+    "chars": 351,
+    "start": "KA V ACH: USER LOGIN ANALYSIS USING\nLLM\nReport submitted to\nNational Institute of Technology, Agartala\nfor the",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 3,
+    "chars": 380,
+    "start": "Dedicated To\nTo my project supervisor, Dr. Ranjita Das, Assistant Professor, CSED, NIT Agar-\ntala, for guidanc",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 4,
+    "chars": 533,
+    "start": "REPORT APPROV AL FOR MCA\nThis report entitled \u201cKA V ACH: User Login Analysis Using LLM\u201d, submitted by Umakant ",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 5,
+    "chars": 582,
+    "start": "DECLARATION\nI declare that this report, \u201cKA V ACH: User Login Analysis Using LLM\u201d, submitted to the De-\npartme",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 6,
+    "chars": 608,
+    "start": "CERTIFICA TE\nThe report titled \u201cKA V ACH: User Login Analysis Using LLM\u201d, submitted by Umakant Y adav\n(24MCA02",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 7,
+    "chars": 796,
+    "start": "Acknowledgement\nI thank my project supervisor, Dr. Ranjita Das, Assistant Professor, for guidance, feedback, a",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 8,
+    "chars": 1928,
+    "start": "List of Figures\n1.1 KA V ACH implementation architecture. . . . . . . . . . . . . . . . . . . . . . 3\n3.1 C4 s",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 9,
+    "chars": 1139,
+    "start": "List of T ables\n1 Declared software stack. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4\n2 Detec",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 10,
+    "chars": 1712,
+    "start": "Abstract\nKA V ACH monitors login activity and applies explicit rules to identify unusual events. It pro-\nvides",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 11,
+    "chars": 2033,
+    "start": "Contents\nAcknowledgement vii\nAbstract x\n1 Introduction 1\n1.1 Project Overview . . . . . . . . . . . . . . . . ",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 12,
+    "chars": 2545,
+    "start": "4 Functioning of the System 19\n4.1 Registration and Authentication . . . . . . . . . . . . . . . . . . . . . .",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 13,
+    "chars": 1182,
+    "start": "CHAPTER 1\nIntroduction\n1.1 Project Overview\nLogin records help investigators examine account misuse. Each reco",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 14,
+    "chars": 1600,
+    "start": "Chapter 1. Introduction\nwith alerts and recent account risk to support that investigation in a small applicati",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 15,
+    "chars": 1243,
+    "start": "Chapter 1. Introduction\nReact frontend\nDashboard, anomalies, risk, logs, directory, audit, AI\nSpring Boot REST",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 16,
+    "chars": 1022,
+    "start": "CHAPTER 2\nRequirement Analysis\n2.1 Software Requirements\nThe repository declares the dependencies in Table 1. ",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 17,
+    "chars": 1902,
+    "start": "Chapter 2. Requirement Analysis\n2.2 Functional Requirements\n1. V alidate registration, reject duplicate userna",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 18,
+    "chars": 1050,
+    "start": "CHAPTER 3\nDesign Analysis\n3.1 Layered Design and Access Boundaries\nHTTP controllers validate inputs and pass w",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 19,
+    "chars": 1293,
+    "start": "Chapter 3. Design Analysis\n3.2 C4 Level 1: System Context\nAccount users and administrators access the same KA ",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 20,
+    "chars": 1438,
+    "start": "Chapter 3. Design Analysis\n3.3 C4 Level 2: Containers\nKA V ACH has three C4 containers: the React browser appl",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 21,
+    "chars": 1281,
+    "start": "Chapter 3. Design Analysis\n3.4 C4 Level 3: Backend Components\nThe backend contains security \ufb01lters, controller",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 22,
+    "chars": 1215,
+    "start": "Chapter 3. Design Analysis\n3.5 UML Component Architecture\nThe browser and JVM are the execution environments i",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 23,
+    "chars": 1312,
+    "start": "Chapter 3. Design Analysis\n3.6 UML Sequence: Authentication and Detection\nAuthentication proceeds down the lif",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 24,
+    "chars": 1383,
+    "start": "Chapter 3. Design Analysis\n3.7 UML Sequence: Two-Loop Investigation\nThe outer loop handles the initial task an",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 25,
+    "chars": 1811,
+    "start": "Chapter 3. Design Analysis\n3.8 Entity-Relationship Diagram\nUsers can have zero or more login records and anoma",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 26,
+    "chars": 1054,
+    "start": "Chapter 3. Design Analysis\n3.9 UML Use-Case Diagram\nAn administrator inherits ordinary authenticated use cases",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 27,
+    "chars": 1152,
+    "start": "Chapter 3. Design Analysis\n3.10 DFD Level 0: Context\nRequests and responses cross the boundary between one KA ",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 28,
+    "chars": 1674,
+    "start": "Chapter 3. Design Analysis\n3.11 DFD Level 1: Processes and Stores\nSix processes handle identity and accounts, ",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 29,
+    "chars": 1396,
+    "start": "Chapter 3. Design Analysis\n3.12 DFD Level 2: Anomaly Detection\nProcess 3.0 dispatches the event to six indepen",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 30,
+    "chars": 1607,
+    "start": "Chapter 3. Design Analysis\n3.13 DFD Level 2: AI Investigation\nProcess 5.0 routes requests to dedicated advisor",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 31,
+    "chars": 1167,
+    "start": "CHAPTER 4\nFunctioning of the System\n4.1 Registration and Authentication\nRegistration trims the username, norma",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 32,
+    "chars": 1539,
+    "start": "Chapter 4. Functioning of the System\nthe event, and invokes detection. The caller catches recording exceptions",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 33,
+    "chars": 1894,
+    "start": "Chapter 4. Functioning of the System\nThe inactive-account rule reads a Boolean \ufb02ag; it does not calculate dorm",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 34,
+    "chars": 1722,
+    "start": "Chapter 4. Functioning of the System\nThese periods matter when comparing \ufb01gures. Global counts and watchlist a",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 35,
+    "chars": 1397,
+    "start": "Chapter 4. Functioning of the System\nTool Purpose\nget_user_risk_profile Account\u2019s recent risk.\nget_top_risky_u",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 36,
+    "chars": 1155,
+    "start": "CHAPTER 5\nInterfaces and Validation\n5.1 Interface Overview\nSigned-in users can open the anomaly, risk, login-l",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 37,
+    "chars": 519,
+    "start": "Chapter 5. Interfaces and V alidation\n5.2 Application Screenshots\nThese six candidate-provided captures show s",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 38,
+    "chars": 511,
+    "start": "Chapter 5. Interfaces and V alidation\n5.2.1 Anomaly Investigation and Login Telemetry\nThe anomaly list shows m",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 39,
+    "chars": 642,
+    "start": "Chapter 5. Interfaces and V alidation\n5.2.2 Personal Risk and AI Workspace\nThe personal page shows the signed-",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 40,
+    "chars": 2326,
+    "start": "Chapter 5. Interfaces and V alidation\n5.3 Validation Plan\nThe screenshots show interface states captured by th",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 41,
+    "chars": 1524,
+    "start": "CHAPTER 6\nConclusion and Future Work\n6.1 Conclusion\nKA V ACH records authenticated login activity, applies six",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 42,
+    "chars": 774,
+    "start": "References\n[1] KA V ACH project source,login-analysis-backend and login-analysis-frontend, local snap-\nshot re",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 43,
+    "chars": 1134,
+    "start": "APPENDIX A\nProject Structure\nA.1 Repository Organization\nThe REST backend and browser frontend occupy separate",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 44,
+    "chars": 934,
+    "start": "APPENDIX B\nDatabase T ables\nThe tables list JPA attributes, Java types, and any explicitly declared column nam",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 45,
+    "chars": 1430,
+    "start": "Appendix B. Database Tables\nA user can have many login, anomaly, and analysis-history records. Audit records s",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 46,
+    "chars": 1782,
+    "start": "Appendix B. Database Tables\nAttribute / column Type Mapping Purpose\nseverity Severity NN LOW, MEDIUM, HIGH, or",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 47,
+    "chars": 600,
+    "start": "Appendix B. Database Tables\nB.5 Audit Records\nTable 9: Data dictionary: audit_logs.\nAttribute Type Mapping Pur",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 48,
+    "chars": 999,
+    "start": "APPENDIX C\nAPI Quick Reference\nEvery route has the pre\ufb01x /api; :name marks a path variable. Public routes need",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 49,
+    "chars": 1663,
+    "start": "Appendix C. API Quick Reference\nMethod Route after /api Scope Purpose\nDELETE /users/:id ADMIN Delete account; ",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 50,
+    "chars": 1633,
+    "start": "Appendix C. API Quick Reference\nC.3 Risk, Dashboard, and Audit\nTable 12: Risk, analytics, dashboard, and audit",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 51,
+    "chars": 974,
+    "start": "Appendix C. API Quick Reference\nMethod Route after /api Scope Purpose\nPOST /ai/agent-loop ADMIN /\nUSER\nExecute",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 52,
+    "chars": 106,
+    "start": "APPENDIX D\nPublications Related to the Work\nNo publications related to this project have been reported.\n40",
+    "width": 595.28,
+    "height": 841.89
+  },
+  {
+    "page": 53,
+    "chars": 667,
+    "start": "APPENDIX E\nBiographical Sketch\nUmakant Yadav\nDepartment of Computer Science and Engineering\nNational Institute",
+    "width": 595.28,
+    "height": 841.89
+  }
+]

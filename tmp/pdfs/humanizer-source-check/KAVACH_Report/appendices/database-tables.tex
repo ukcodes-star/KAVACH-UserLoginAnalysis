@@ -1,0 +1,89 @@
+\chapter{Database Tables}
+The tables list JPA attributes, Java types, and any explicitly declared column names. PK denotes a primary key, FK a relationship, NN non-null, and UQ unique. All identifiers are identity-generated Long values, and enums use string storage. Initialization values are application defaults without implied SQL DEFAULT clauses. ORM configuration determines physical naming.
+
+\section{Users}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{5.7cm}}
+\caption{Data dictionary: \code{users}.}\\\toprule Attribute & Type & Mapping & Purpose / initialization\\\midrule\endfirsthead
+\toprule Attribute & Type & Mapping & Purpose / initialization\\\midrule\endhead
+\code{id} & Long & PK & Identity-generated account identifier.\\
+\code{username} & String & NN, UQ & Up to 100 characters.\\
+\code{email} & String & NN, UQ & Up to 150 characters; normalized during registration.\\
+\code{password} & String & NN & Encoded password; authentication uses BCrypt matching.\\
+\code{active} & Boolean & NN & Initialized to true; false blocks account access.\\
+\code{role} & UserRole & NN & String enum, length 20; initialized to USER when absent.\\
+\code{createdAt} & LocalDate\allowbreak{}Time & NN & Set on creation when absent.\\\bottomrule
+\end{longtable}\endgroup
+
+A user can have many login, anomaly, and analysis-history records. Audit records store usernames without a relationship to \code{users}. UserRole has two values: ADMIN and USER.
+
+\section{Login Events}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{5.7cm}}
+\caption{Data dictionary: \code{user_login_logs}.}\\\toprule Attribute / column & Type & Mapping & Purpose\\\midrule\endfirsthead
+\toprule Attribute / column & Type & Mapping & Purpose\\\midrule\endhead
+\code{id} & Long & PK & Login-event identifier.\\
+\code{user} / \code{user_id} & User & FK, NN & Required many-to-one, lazy user reference.\\
+\code{loginTime} / \code{login_time} & LocalDate\allowbreak{}Time & NN & Event timestamp; initialized when absent.\\
+\code{ipAddress} / \code{ip_address} & String & NN & Up to 100 characters.\\
+\code{location} & String & Optional & Up to 100 characters; event-supplied context.\\
+\code{device} & String & Optional & Up to 200 characters; device/user-agent string.\\
+\code{status} & LoginStatus & NN & String enum, length 20: SUCCESS or FAILED.\\\bottomrule
+\end{longtable}\endgroup
+The declared indexes cover \code{user_id}, \code{login_time}, \code{status}, and \code{ip_address}, named \code{idx_login_username}, \code{idx_login_time}, \code{idx_login_status}, and \code{idx_login_ip}, respectively. The name \code{idx_login_username} thus refers to an index on the user identifier.
+
+\section{Anomalies}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{5.7cm}}
+\caption{Data dictionary: \code{anomalies}.}\\\toprule Attribute / column & Type & Mapping & Purpose\\\midrule\endfirsthead
+\toprule Attribute / column & Type & Mapping & Purpose\\\midrule\endhead
+\code{id} & Long & PK & Anomaly identifier.\\
+\code{user} / \code{user_id} & User & FK, NN & Required many-to-one account reference.\\
+\code{loginLog} / \code{login_log_id} & LoginLog & FK, NN & Required triggering-event reference.\\
+\code{anomalyType} & AnomalyType & NN & One of the six rule types.\\
+\code{description} & String & NN & Human-readable trigger explanation.\\
+\code{riskScore} & Integer & NN & Fixed weight assigned by the matching rule.\\
+\code{severity} & Severity & NN & LOW, MEDIUM, HIGH, or CRITICAL.\\
+\code{detectedAt} & LocalDate\allowbreak{}Time & NN & Detection timestamp initialized when saved.\\\bottomrule
+\end{longtable}\endgroup
+
+AnomalyType has six values: \code{FAILED_LOGIN}, \code{UNUSUAL_LOGIN_TIME}, \code{INACTIVE_USER_LOGIN}, \code{NEW_IP}, \code{NEW_DEVICE}, and \code{BRUTE_FORCE}. The service searches for the same user/type/login combination before saving. The entity has no composite uniqueness constraint for that combination.
+
+\section{AI Analysis History}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{5.7cm}}
+\caption{Data dictionary: \code{ai_analysis_history}.}\\\toprule Attribute / column & Type & Mapping & Purpose\\\midrule\endfirsthead
+\toprule Attribute / column & Type & Mapping & Purpose\\\midrule\endhead
+\code{id} & Long & PK & Analysis record identifier.\\
+\code{anomaly} / \code{anomaly_id} & Anomaly & FK, optional & Lazy link to the analyzed anomaly.\\
+\code{user} / \code{user_id} & User & FK, optional & Lazy link to the associated user.\\
+\code{cachedAnomalyId} & Long & Optional & Column \code{cached_anomaly_id}; retained identifier, not FK.\\
+\code{cachedUserId} & Long & Optional & Column \code{cached_user_id}; retained identifier, not FK.\\
+\code{username} & String & Optional & Up to 100 characters.\\
+\code{analysisType} & String & NN & Up to 50 characters.\\
+\code{summary} & String / TEXT & Optional & Generated or fallback overview.\\
+\code{riskExplanation} & String / TEXT & Optional & Contextual risk explanation.\\
+\code{indicatorsJson} & String / TEXT & Optional & Serialized indicators.\\
+\code{recommendationsJson} & String / TEXT & Optional & Serialized recommendations.\\
+\code{confidence} & String & Optional & Up to 20 characters; advisory label.\\
+\code{threatLevel} & String & Optional & Up to 20 characters.\\
+\code{model} & String & Optional & Up to 100 characters.\\
+\code{isAdvisory} & Boolean & NN & Initialized to true.\\
+\code{createdAt} & LocalDate\allowbreak{}Time & NN & Analysis creation timestamp.\\\bottomrule
+\end{longtable}\endgroup
+
+Fields labelled JSON store serialized text in TEXT columns; the entity definitions do not map them to PostgreSQL JSONB. Optional relationships and cached IDs preserve analysis context. The history service and DTO control which fields reach the caller.
+
+\section{Audit Records}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{5.7cm}}
+\caption{Data dictionary: \code{audit_logs}.}\\\toprule Attribute & Type & Mapping & Purpose\\\midrule\endfirsthead
+\toprule Attribute & Type & Mapping & Purpose\\\midrule\endhead
+\code{id} & Long & PK & Audit record identifier.\\
+\code{username} & String & Optional & Actor/account text; no declared user FK.\\
+\code{action} & String & NN & Security or application action name.\\
+\code{details} & String & Optional & Description, up to 1000 characters.\\
+\code{ipAddress} & String & Optional & Recorded request/action source.\\
+\code{timestamp} & LocalDate\allowbreak{}Time & NN & Initialized when absent.\\\bottomrule
+\end{longtable}\endgroup
+This table stores selected audit events. Its entity mapping provides no append-only restriction, hash chain, or database trigger that records every change.

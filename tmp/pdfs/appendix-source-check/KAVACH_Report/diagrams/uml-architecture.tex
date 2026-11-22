@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+\draw[boundary] (-1.8,1.1) rectangle (12,-1.6);
+\node[anchor=west,font=\small\bfseries] at (-1.5,.8) {\textless\textless execution environment\textgreater\textgreater\ Browser};
+\dn{app}{ui}{5.1}{-.3}{11.2}{\textless\textless component\textgreater\textgreater\ React application\\\footnotesize Pages + protected routes + Axios API client}
+\draw[boundary] (-1.8,-3) rectangle (12,-13.5);
+\node[anchor=west,font=\small\bfseries] at (-1.5,-3.4) {\textless\textless execution environment\textgreater\textgreater\ Spring application / JVM};
+\dn{check}{security}{5.1}{-4.8}{11.2}{\textless\textless component\textgreater\textgreater\ Security filter chain\\\footnotesize JWT validation and current-user authorities; method security enabled}
+\dn{app}{api}{5.1}{-7.1}{11.2}{\textless\textless component\textgreater\textgreater\ REST controllers\\\footnotesize Provides /api/auth, /users, /login-logs, /anomalies, /risk, /ai and related APIs}
+\dn{app}{services}{2}{-10}{5}{\textless\textless component\textgreater\textgreater\ Domain services\\\footnotesize Identity, telemetry, detection, risk, dashboard and audit}
+\dn{ai}{tools}{8.2}{-10}{5}{\textless\textless component\textgreater\textgreater\ AI and tools\\\footnotesize Two-loop agent, registry, advisory analysis and provider client}
+\dn{store}{persistence}{5.1}{-12.3}{11.2}{\textless\textless component\textgreater\textgreater\ JPA persistence adapters}
+\dn{store}{db}{1.8}{-15.7}{4.6}{\textless\textless database\textgreater\textgreater\\PostgreSQL}
+\dn{ai}{provider}{8.4}{-15.7}{4.6}{\textless\textless external system\textgreater\textgreater\\xAI / Grok}
+\draw[ret](ui)--node[edge,right]{requires JSON REST interface}(security);
+\draw[ret](security)--node[edge,right]{authenticated request}(api);
+\draw[ret](api)--(services);\draw[ret](api)--(tools);
+\draw[ret](tools)--node[edge,above]{invokes}(services);
+\draw[ret](services)--(persistence);\draw[ret](tools)--(persistence);
+\draw[ret](persistence)--node[edge,left]{requires JDBC}(db);
+\draw[ret](tools.east)--++(1.0,0)|-(provider.east);
+\end{tikzpicture}

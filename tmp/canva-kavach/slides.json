@@ -1,0 +1,845 @@
+[
+  [
+    "KAVACH",
+    "User Login Analysis Using LLM",
+    "cover"
+  ],
+  [
+    "The login monitoring problem",
+    "KAVACH turns scattered authentication events into evidence an administrator can act on.",
+    "problem",
+    [
+      [
+        "Raw authentication events",
+        "A login outcome alone gives little context about the client or account history."
+      ],
+      [
+        "Suspicious patterns",
+        "Repeated failures, unfamiliar clients and off-hours access need different checks."
+      ],
+      [
+        "Investigation and response",
+        "Review the matched rule, open the source event and decide whether to deactivate the account."
+      ]
+    ]
+  ],
+  [
+    "KAVACH system architecture",
+    "React and Spring Boot share authentication, telemetry and investigation data through PostgreSQL.",
+    "architecture",
+    [
+      [
+        "React client",
+        "Sign-in and registration\nPersonal risk and login history\nAdministrator dashboard and AI console"
+      ],
+      [
+        "Spring Boot API",
+        "Spring Security and JWT\nLogin telemetry and anomaly detector\nRisk queries and account administration"
+      ],
+      [
+        "PostgreSQL",
+        "Users and login logs\nAnomalies and audit events\nAI analysis history"
+      ],
+      [
+        "Grok and fallback",
+        "Model-assisted investigation\nRegistered tools run in the application\nDeterministic fallback when inference is unavailable"
+      ]
+    ]
+  ],
+  [
+    "How a login becomes an alert",
+    "An authentication outcome becomes a stored event, then rules and queries add context.",
+    "flow",
+    [
+      [
+        "Authenticate",
+        "Check account status and BCrypt password."
+      ],
+      [
+        "Record",
+        "Commit the known-account event independently."
+      ],
+      [
+        "Detect",
+        "Evaluate six rules against the event and its history."
+      ],
+      [
+        "Prioritize",
+        "Summarize recent risk for user or administrator."
+      ]
+    ],
+    "Unknown usernames produce an audit failure without a user-linked login event."
+  ],
+  [
+    "Event sequence · capture and persistence",
+    "Login telemetry is committed independently of the authentication outcome.",
+    "sequence",
+    [
+      "Browser",
+      "Auth service",
+      "Telemetry service",
+      "PostgreSQL"
+    ],
+    [
+      [
+        0,
+        1,
+        "Submit sign-in request"
+      ],
+      [
+        1,
+        3,
+        "Read account and stored password hash"
+      ],
+      [
+        3,
+        1,
+        "Return account state"
+      ],
+      [
+        1,
+        2,
+        "Send known-account outcome and client metadata"
+      ],
+      [
+        2,
+        3,
+        "Persist login event in a new transaction"
+      ],
+      [
+        3,
+        2,
+        "Return stored event"
+      ],
+      [
+        2,
+        3,
+        "Save anomalies for matching rules"
+      ],
+      [
+        1,
+        0,
+        "Return JWT, unauthorized or forbidden"
+      ]
+    ],
+    "REQUIRES_NEW lets the telemetry transaction commit independently."
+  ],
+  [
+    "Event sequence · detection and risk",
+    "The family of alerts can grow when a single login matches several rules.",
+    "sequence",
+    [
+      "Telemetry service",
+      "Rule engine",
+      "PostgreSQL",
+      "Risk service"
+    ],
+    [
+      [
+        0,
+        1,
+        "Pass the persisted event"
+      ],
+      [
+        1,
+        2,
+        "Read account history and recent failure count"
+      ],
+      [
+        2,
+        1,
+        "Return evidence"
+      ],
+      [
+        1,
+        2,
+        "Check existing event and rule pairs"
+      ],
+      [
+        1,
+        2,
+        "Save each new matching anomaly"
+      ],
+      [
+        3,
+        2,
+        "Read anomalies detected in the prior 24 hours"
+      ],
+      [
+        2,
+        3,
+        "Return stored rule weights"
+      ]
+    ],
+    "Example calculation: failed login + new IP + new device = 90 points."
+  ],
+  [
+    "Event sequence · AI-assisted investigation",
+    "The agent calls application tools and incorporates returned evidence into the response.",
+    "sequence",
+    [
+      "Administrator",
+      "AI console API",
+      "Grok or fallback",
+      "Security tools"
+    ],
+    [
+      [
+        0,
+        1,
+        "Ask for a summary of recent anomalies"
+      ],
+      [
+        1,
+        2,
+        "Pass prompt and allowed tool definitions"
+      ],
+      [
+        2,
+        1,
+        "Return text or a requested tool call"
+      ],
+      [
+        1,
+        3,
+        "Run the authorized evidence query"
+      ],
+      [
+        3,
+        1,
+        "Return query results or an error"
+      ],
+      [
+        1,
+        2,
+        "Provide the tool result for the next iteration"
+      ],
+      [
+        1,
+        0,
+        "Return response, mode and tool trace"
+      ]
+    ],
+    "The configured inner-loop limit is six iterations per invocation."
+  ],
+  [
+    "Detection and investigation runtime",
+    "The event path handles deterministic checks. The AI workspace supports evidence review.",
+    "columns",
+    [
+      [
+        "Event processing",
+        "Authentication",
+        "Known-account attempts produce success or failure telemetry.",
+        "Detection",
+        "Six fixed rules check outcome, time, account state and history.",
+        "Persistence",
+        "Matched rules store weight, severity and a link to the event."
+      ],
+      [
+        "Risk calculation",
+        "Window",
+        "Sum weights from anomalies detected in the prior 24 hours.",
+        "Score",
+        "Cap the total at 100 and assign one of four tiers.",
+        "Watchlist",
+        "Rank up to ten accounts by recent score."
+      ],
+      [
+        "AI investigation",
+        "Context",
+        "Use the prompt, selected role and any submitted context.",
+        "Execution",
+        "Run registered tools sequentially and record their outcomes.",
+        "Fallback",
+        "Use deterministic behavior if live inference is unavailable."
+      ]
+    ]
+  ],
+  [
+    "Web sequence · a user checks personal risk",
+    "The signed-in user can inspect their own security profile through protected routes.",
+    "sequence",
+    [
+      "User",
+      "React client",
+      "Spring Security",
+      "Risk API",
+      "PostgreSQL"
+    ],
+    [
+      [
+        0,
+        1,
+        "Open personal risk"
+      ],
+      [
+        1,
+        2,
+        "Request risk profile with bearer JWT"
+      ],
+      [
+        2,
+        4,
+        "Check current account state"
+      ],
+      [
+        2,
+        3,
+        "Pass authenticated request"
+      ],
+      [
+        3,
+        4,
+        "Query the account’s 24-hour anomalies"
+      ],
+      [
+        4,
+        3,
+        "Return matching weights and count"
+      ],
+      [
+        3,
+        1,
+        "Return score and tier"
+      ],
+      [
+        1,
+        0,
+        "Display personal risk"
+      ]
+    ],
+    "The API enforces account scope for personal data."
+  ],
+  [
+    "Web · clients, access and request handling",
+    "The browser presents the screens and the backend enforces access.",
+    "columns",
+    [
+      [
+        "React clients",
+        "Public screens",
+        "Registration and sign-in.",
+        "Personal views",
+        "Login telemetry, anomalies, risk and the AI workspace within authorized scope.",
+        "Admin views",
+        "Global dashboard, account directory and audit trail."
+      ],
+      [
+        "Spring Security",
+        "Sign-in",
+        "Check BCrypt password and active account status before issuing JWT.",
+        "Protected requests",
+        "Validate the bearer token and recheck the current account state.",
+        "Permissions",
+        "Use caller role and resource ownership."
+      ],
+      [
+        "Persistence",
+        "Telemetry",
+        "Store login outcomes and client context.",
+        "Investigation",
+        "Read events, rule matches, risk and audit records.",
+        "Account changes",
+        "Store activation state and record administrative actions."
+      ]
+    ]
+  ],
+  [
+    "Web sequence · admin changes account status",
+    "A human operator reviews the evidence and submits a protected account decision.",
+    "sequence",
+    [
+      "Administrator",
+      "React directory",
+      "Spring Security",
+      "User service",
+      "PostgreSQL"
+    ],
+    [
+      [
+        0,
+        1,
+        "Inspect account and supporting login evidence"
+      ],
+      [
+        1,
+        2,
+        "Send account-status change with JWT"
+      ],
+      [
+        2,
+        3,
+        "Authorize administrator action"
+      ],
+      [
+        3,
+        4,
+        "Update active flag and write audit record"
+      ],
+      [
+        4,
+        3,
+        "Return persisted account state"
+      ],
+      [
+        3,
+        1,
+        "Return status update"
+      ],
+      [
+        1,
+        0,
+        "Show updated account state"
+      ]
+    ],
+    "Later protected requests recheck account state, including for previously issued tokens."
+  ],
+  [
+    "Login outcomes and account risk",
+    "Login outcomes describe a single event. Risk summarizes recent anomalies for an account.",
+    "states",
+    [
+      [
+        "Login outcome",
+        [
+          "Success",
+          "Failure",
+          "Blocked account"
+        ],
+        "Blocked known accounts contribute failed telemetry when recording succeeds."
+      ],
+      [
+        "24-hour risk tier",
+        [
+          "Low 0–29",
+          "Medium 30–59",
+          "High 60–79",
+          "Critical 80–100"
+        ],
+        "Risk tiers guide review. The weights are fixed and represent a priority score."
+      ]
+    ]
+  ],
+  [
+    "Human review and security evidence",
+    "Administrators can trace a dashboard signal to the event and decide how to respond.",
+    "grid",
+    [
+      [
+        "Review the alert",
+        "Open the rule match and identify the account, severity and linked event."
+      ],
+      [
+        "Check the evidence",
+        "Compare time, status, IP and device with the account’s history."
+      ],
+      [
+        "Choose an action",
+        "Deactivate or reactivate the account through the directory when warranted."
+      ],
+      [
+        "Review the audit trail",
+        "Use audit records to trace account-management and security activity."
+      ]
+    ]
+  ],
+  [
+    "Application runtime and request routing",
+    "Repository configuration describes a development runtime.",
+    "deploy",
+    [
+      [
+        "Browser",
+        "React 19 interface"
+      ],
+      [
+        "Vite",
+        "Frontend development server"
+      ],
+      [
+        "Spring Boot",
+        "Java 21 API on port 8080"
+      ],
+      [
+        "PostgreSQL",
+        "Relational persistence"
+      ],
+      [
+        "Grok API",
+        "Optional model inference"
+      ]
+    ],
+    "Sources: frontend package manifest and backend application configuration."
+  ],
+  [
+    "Demonstration results",
+    "Administrator dashboard snapshot",
+    "metrics",
+    [
+      [
+        "11",
+        "Monitored users"
+      ],
+      [
+        "32",
+        "Login sessions"
+      ],
+      [
+        "35",
+        "Total anomalies"
+      ]
+    ],
+    "26 of 32 sessions failed (81.3%). The capture shows 1 critical and 8 high anomalies, and 0 accounts at or above the recent-risk threshold."
+  ],
+  [
+    "Four-layer system architecture",
+    "Each layer produces evidence used by the next stage of investigation.",
+    "layers",
+    [
+      [
+        "L1  Capture",
+        "Authentication and telemetry",
+        "Stores known-account outcomes and client metadata."
+      ],
+      [
+        "L2  Detect",
+        "Rule engine",
+        "Creates anomalies with fixed weights and severities."
+      ],
+      [
+        "L3  Prioritize",
+        "Risk and dashboards",
+        "Summarizes recent weights and ranks accounts."
+      ],
+      [
+        "L4  Investigate and respond",
+        "People and AI tools",
+        "Review evidence and record authorized decisions."
+      ]
+    ]
+  ],
+  [
+    "Layer 1 · capture and telemetry",
+    "Known-account login attempts become the evidence behind downstream security views.",
+    "grid",
+    [
+      [
+        "Account and outcome",
+        "Associate the event with a known account and store successful or failed status."
+      ],
+      [
+        "Client IP",
+        "Capture the address available to the application for history comparisons."
+      ],
+      [
+        "Device and location",
+        "Store reported device and available location fields with the event."
+      ],
+      [
+        "Event time",
+        "Use login time for historical checks and keep detection time on the anomaly."
+      ],
+      [
+        "Independent persistence",
+        "Store the event and run detection inside a separate transaction."
+      ],
+      [
+        "Demonstration data",
+        "Administrator-only event creation feeds the same rule path with controlled inputs."
+      ]
+    ]
+  ],
+  [
+    "Layers 2–4 · detection, prioritization and review",
+    "The detector, dashboard and operator each make a different decision.",
+    "columns",
+    [
+      [
+        "L2 · detect",
+        "Evaluate",
+        "Check event outcome, hour, account activity, IP, device and failures.",
+        "Record",
+        "Store matched rule, severity and weight.",
+        "Connect",
+        "Keep the source event ID for investigation."
+      ],
+      [
+        "L3 · prioritize",
+        "Aggregate",
+        "Sum each account’s anomaly weights from the latest 24 hours.",
+        "Rank",
+        "Score up to 100 and surface accounts with recent risk.",
+        "Contextualize",
+        "Use all-time alert counts and the seven-day login trend alongside risk."
+      ],
+      [
+        "L4 · investigate",
+        "Inspect",
+        "Open evidence in telemetry, anomalies or the AI workspace.",
+        "Decide",
+        "An authorized administrator can change account status.",
+        "Trace",
+        "Audit records and AI execution steps document the available evidence."
+      ]
+    ]
+  ],
+  [
+    "Shared data and component boundaries",
+    "PostgreSQL supports account state, event evidence and investigation history.",
+    "columns",
+    [
+      [
+        "Core records",
+        "Users",
+        "Account identity, role, active state and BCrypt hash.",
+        "Login logs",
+        "Account association, status, time, IP, device and location.",
+        "Anomalies",
+        "Account and event references, type, detection time and weight."
+      ],
+      [
+        "Investigation records",
+        "Audit logs",
+        "Record administrative and security events.",
+        "AI analysis history",
+        "Store analysis output and whether it was advisory.",
+        "Agent trace",
+        "Returns tool outcomes, execution mode and loop counts."
+      ],
+      [
+        "Service boundaries",
+        "React",
+        "Collects user input and renders returned records.",
+        "Spring services",
+        "Enforce access and apply detection, scoring and audit logic.",
+        "PostgreSQL",
+        "Retains application records for queries and investigation."
+      ]
+    ]
+  ],
+  [
+    "Two-loop agent workflow",
+    "Submitted prompts, steering and follow-ups drive bounded tool execution.",
+    "flow",
+    [
+      [
+        "Read context",
+        "Load selected role and supplied prompt context."
+      ],
+      [
+        "Plan",
+        "Use Grok or a deterministic fallback."
+      ],
+      [
+        "Call tools",
+        "Run application tools and collect results."
+      ],
+      [
+        "Follow up",
+        "Start new inner invocations for supplied follow-ups."
+      ],
+      [
+        "Return trace",
+        "Show the final output, tool steps and mode."
+      ]
+    ],
+    "The inner loop allows up to six iterations per invocation. Steering is submitted with the request."
+  ],
+  [
+    "Authentication event sources",
+    "Authentication outcomes determine what evidence can be recorded.",
+    "table",
+    [
+      [
+        "Event",
+        "User-linked telemetry",
+        "Authentication outcome"
+      ],
+      [
+        "Valid active account",
+        "SUCCESS",
+        "JWT is issued"
+      ],
+      [
+        "Wrong password, known account",
+        "FAILED",
+        "Unauthorized"
+      ],
+      [
+        "Inactive account",
+        "FAILED when recording succeeds",
+        "Forbidden"
+      ],
+      [
+        "Unknown username",
+        "Audit failure only",
+        "Unauthorized"
+      ]
+    ],
+    "Evidence can also be created through the administrator-only demonstration path."
+  ],
+  [
+    "Client context and demonstration inputs",
+    "Each field supports a different part of the investigation.",
+    "grid",
+    [
+      [
+        "IP address",
+        "The rule compares the stored IP with earlier events for that account."
+      ],
+      [
+        "Device",
+        "The rule compares stored device strings without regard to case."
+      ],
+      [
+        "Login timestamp",
+        "Hour-of-day detection and the failure count use the event timestamp."
+      ],
+      [
+        "Detection timestamp",
+        "The timestamp on the anomaly controls inclusion in the 24-hour risk calculation."
+      ]
+    ]
+  ],
+  [
+    "Rule checks before an anomaly is recorded",
+    "Six implemented rules produce fixed weights. Multiple rules can match one event.",
+    "table",
+    [
+      [
+        "Rule",
+        "Matching condition",
+        "Weight",
+        "Severity"
+      ],
+      [
+        "Failed login",
+        "Event is marked FAILED.",
+        "20",
+        "Low"
+      ],
+      [
+        "Unusual hour",
+        "Event hour is between 00:00 and 04:59.",
+        "25",
+        "Low"
+      ],
+      [
+        "Inactive account",
+        "Account active flag is false.",
+        "80",
+        "Critical"
+      ],
+      [
+        "New IP",
+        "Unseen IP after a prior event exists.",
+        "40",
+        "Medium"
+      ],
+      [
+        "New device",
+        "Unseen device after a prior event exists.",
+        "30",
+        "Medium"
+      ],
+      [
+        "Repeated failures",
+        "At least five qualifying failures in the 10-minute check.",
+        "70",
+        "High"
+      ]
+    ],
+    "The same user, event and rule combination is checked before insertion."
+  ],
+  [
+    "Risk updates after detection",
+    "Anomaly weights influence risk for 24 hours after detection.",
+    "table",
+    [
+      [
+        "Change",
+        "Risk effect",
+        "Example"
+      ],
+      [
+        "New anomaly",
+        "Add its weight",
+        "New IP adds 40 points"
+      ],
+      [
+        "Several recent matches",
+        "Sum the stored weights",
+        "20 + 40 + 30 = 90, Critical"
+      ],
+      [
+        "Total exceeds 100",
+        "Cap the score",
+        "120 points becomes 100"
+      ],
+      [
+        "Anomaly becomes older than 24 hours",
+        "Exclude the weight",
+        "The risk tier can fall as evidence ages"
+      ]
+    ],
+    "The examples illustrate the scoring logic. They are calculations from the implemented weights."
+  ],
+  [
+    "Telemetry intake rules",
+    "The event shape and transaction boundary determine the evidence available to reviewers.",
+    "table",
+    [
+      [
+        "Check",
+        "Behavior",
+        "Result"
+      ],
+      [
+        "Account association",
+        "Link telemetry to a known user.",
+        "Unknown usernames create audit evidence."
+      ],
+      [
+        "Missing metadata",
+        "Supply defaults for missing IP, device and location.",
+        "The log retains a consistent shape."
+      ],
+      [
+        "Commit boundary",
+        "Use an independent telemetry transaction.",
+        "A failed authentication response can still leave a log."
+      ],
+      [
+        "Duplicate rule match",
+        "Check account, event and rule before saving.",
+        "Sequential reanalysis avoids duplicates."
+      ]
+    ],
+    "Concurrent insertion remains a validation case."
+  ],
+  [
+    "Failure handling and recovery",
+    "The report documents fallback behavior and the scenarios that still need controlled validation.",
+    "grid",
+    [
+      [
+        "Authentication fails",
+        "The response can proceed independently of telemetry. Recording errors are handled by the caller."
+      ],
+      [
+        "Model or parser fails",
+        "The service can return deterministic advisory output or use the fallback planner."
+      ],
+      [
+        "Account deactivated",
+        "The backend rechecks account state on subsequent protected requests."
+      ],
+      [
+        "Next validation",
+        "Test time boundaries, concurrent inserts, authorization and provider failure before reporting accuracy or latency."
+      ]
+    ],
+    "Thesis validation plan: 15 functional scenarios defined. The dashboard snapshot documents demonstration state."
+  ]
+]

@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+\dn{person}{actor}{5.2}{0}{6.4}{\textbf{User / Administrator}\\\mbox{[Person]} Uses the browser}
+\draw[boundary] (-1.8,-1.7) rectangle (12.2,-13.2);
+\node[font=\small\bfseries,anchor=west,text=KBlue] at (-1.5,-2) {KAVACH software-system boundary};
+\dn{app}{web}{5.2}{-3.7}{9.7}{\textbf{Web application} [Container: React / Vite]\\\footnotesize Page components, React Router, authentication/theme contexts, Axios, charts, Markdown and execution trace. Token stored in browser local storage.}
+\dn{app}{backend}{5.2}{-7.2}{9.7}{\textbf{Backend application} [Container: Java 21 / Spring Boot]\\\footnotesize REST controllers, JWT filter, access checks, services, JPA repositories; deterministic detector; Grok client and two-loop tool orchestration.}
+\dn{store}{db}{5.2}{-11}{9.7}{\textbf{Database} [Container: PostgreSQL]\\\footnotesize users, user\_login\_logs, anomalies, audit\_logs, ai\_analysis\_history. JPA entities and repository queries provide access.}
+\dn{ai}{llm}{5.2}{-15.5}{9.7}{\textbf{External model service} [Software system: xAI / Grok]\\\footnotesize Inference via provider API; backend falls back to local planning / advisory output when unavailable.}
+\draw[dep] (actor)--node[edge,right]{Browser interaction}(web);
+\draw[dep] (web)--node[edge,right]{JSON REST + bearer JWT\\Local Vite /api proxy to :8080}(backend);
+\draw[dep] (backend)--node[edge,right]{JPA / JDBC: records and aggregates}(db);
+\draw[dep] (backend.east)--++(1.3,0)|-(llm.east);
+\node[edge,rotate=90] at (11.75,-11.4) {Provider API request / response};
+\end{tikzpicture}

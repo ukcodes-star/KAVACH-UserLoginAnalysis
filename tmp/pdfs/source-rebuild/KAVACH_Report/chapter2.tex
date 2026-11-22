@@ -1,0 +1,52 @@
+\chapter{Requirement Analysis}
+\section{Software Requirements}
+Table~\ref{tab:stack} lists declarations in the project manifests. Versions describe this repository rather than recommendations about current releases. Installation and execution require separate validation in the target environment.
+\begin{table}[htbp]\centering\small\caption{Declared software stack.}\label{tab:stack}
+\begin{tabularx}{\textwidth}{lY}\toprule Component & Declaration or purpose\\\midrule
+Java & Version 21 in Maven properties.\\
+Spring Boot & Parent 4.1.1; web MVC, validation, JPA, and security starters.\\
+PostgreSQL & Runtime JDBC driver and relational persistence.\\
+JWT & JJWT modules, version 0.12.6.\\
+AI client & OpenAI Java SDK 4.101.0 used for Grok integration.\\
+React & React and React DOM declared as \code{^19.3.1}.\\
+Vite & Build dependency declared as \code{^8.3.6}.\\
+Presentation & Tailwind CSS \code{^3.4.17}, Recharts, Lucide React, GSAP.\\
+HTTP / routing & Axios and React Router DOM.\\\bottomrule\end{tabularx}\end{table}
+
+The backend provides Maven wrapper scripts. The frontend defines development, build, preview, and Oxlint scripts. Vite uses port 5173 and forwards \code{/api} to \code{http://localhost:8080}. The Axios client supports a configurable base URL and otherwise uses \code{/api}.
+
+\section{Functional Requirements}
+\subsection{Authentication and Accounts}
+Registration shall validate data, reject duplicate usernames and email addresses, encode passwords, and create active ordinary-user accounts by default. Login shall check account existence, active state, and password validity. Successful login shall return a token and safe account details. Failed and blocked requests shall produce appropriate errors and audit events.
+
+Administrative operations shall support account inspection, creation, and active-state changes. Changes shall affect later authenticated requests because the JWT filter checks the current account record.
+
+\subsection{Telemetry and Detection}
+The system shall store timestamp, account, outcome, IP address, device, and location for login events. Authentication shall attempt to record successful and failed events for known users. The administrative ingestion path shall allow explicit event creation for controlled demonstrations.
+
+The detector shall evaluate six independent rules. One event may create several anomalies. Before saving an anomaly, the system shall check whether the user, rule, and login record already have a matching entry.
+
+\subsection{Risk and Analytics}
+Risk shall aggregate weights of anomalies detected in the last 24 hours, cap the score at 100, and map it to four named levels. Organization-wide views shall include severity totals, risky-account totals, login outcomes, a seven-day trend, and a ranked watchlist of at most ten accounts.
+
+\subsection{AI and Tool Operations}
+The system shall provide anomaly explanations, user analysis, security summaries, history, chat, and agent-loop execution. The agent response shall include steps and tool outputs for the browser. Deterministic planning or advisory fallback shall support demonstrations when live inference is unavailable.
+
+Tools shall expose names, argument schemas, role assignments, and parallel-safety metadata. Because some tools change accounts or create telemetry, authorization requirements must apply to the execution boundary as well as the visible page.
+
+\section{Non-Functional Requirements}
+\begin{table}[htbp]\centering\small\caption{Quality requirements and available evidence.}
+\begin{tabularx}{\textwidth}{lYY}\toprule Attribute & Intended requirement & Evidence / validation needed\\\midrule
+Security & Restrict protected data and actions. & JWT filter and method checks exist; tool-path policy needs explicit tests.\\
+Explainability & State why alerts were generated. & Stored rule type, description, severity, and weight.\\
+Maintainability & Separate presentation and business logic. & Pages, controllers, services, repositories, entities, and DTOs.\\
+Reliability & Preserve failed-login telemetry. & New transaction on authentication recording; errors caught by caller.\\
+Usability & Provide clear navigation and failures. & Shared UI, route guards, themes, normalized API errors.\\
+Performance & Bound query and AI work. & Pagination and six inner iterations; load tests pending.\\\bottomrule\end{tabularx}\end{table}
+
+These are requirements and implementation observations, not benchmark results. A database audit table does not establish tamper resistance, and bearer authentication does not prove every object-level access check is correct.
+
+\section{Execution Environment and Assumptions}
+Development requires Java 21, a Node.js environment compatible with the frontend dependencies, and PostgreSQL. Live inference requires provider configuration and network access. Credentials should be supplied through the existing configuration mechanisms; none are included in this report.
+
+No measured minimum hardware specification is available. Hardware and concurrency requirements must be established by testing rather than assigning unsupported RAM or CPU figures. Timestamp rules use \code{LocalDateTime} and require a consistent time convention. Administrators must distinguish synthetic events from genuine login attempts, and AI confidence labels must not be interpreted as calibrated attack probabilities.

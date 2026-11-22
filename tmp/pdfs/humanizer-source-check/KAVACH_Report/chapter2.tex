@@ -1,0 +1,33 @@
+\chapter{Requirement Analysis}
+\section{Software Requirements}
+The repository declares the dependencies in Table~\ref{tab:stack}. Development requires Java 21, a compatible Node.js environment, and PostgreSQL. Live inference also needs provider configuration and network access.
+\begin{table}[!ht]\centering\footnotesize\setstretch{1.0}\renewcommand{\arraystretch}{1.1}\caption{Declared software stack.}\label{tab:stack}
+\begin{tabularx}{\textwidth}{lY}\toprule Component & Declaration or purpose\\\midrule
+Java & Version 21 in Maven properties.\\
+Spring Boot & Parent 4.1.1; MVC, validation, JPA, and security starters.\\
+PostgreSQL & JDBC driver and relational persistence.\\
+JWT & JJWT API, implementation, and Jackson modules 0.12.6.\\
+AI client & OpenAI Java SDK 4.101.0 for Grok integration.\\
+React & React and React DOM \code{^19.3.1}.\\
+Vite & Build dependency \code{^8.3.6}.\\
+Presentation & Tailwind CSS \code{^3.4.17}, Recharts, Lucide React, GSAP.\\
+HTTP / routing & Axios and React Router DOM.\\\bottomrule\end{tabularx}\end{table}
+
+Maven wrapper scripts build the backend. The frontend has scripts for development, production builds, preview, and linting. Vite uses port 5173 and proxies \code{/api} to \code{http://localhost:8080}. The Axios client can also use a configured API base URL.
+
+\clearpage\section{Functional Requirements}
+\begin{enumerate}
+\item Validate registration, reject duplicate usernames/emails, hash passwords, authenticate active accounts, and return JWTs with safe user details.
+\item Record known-account login outcomes and permit administrator-created demonstration events with account, timestamp, status, IP, device, and location fields.
+\item Evaluate six independent rules, preserve each triggered anomaly, and check the user/type/event combination before inserting a duplicate.
+\item Aggregate recent anomalies into a capped 24-hour risk score and expose severity totals, login outcomes, a seven-day trend, and a ten-account watchlist.
+\item Provide role-aware account, telemetry, anomaly, audit, and AI views; apply ownership checks to selected personal resources.
+\item Support advisory explanations, analysis history, bounded tool calling, and deterministic fallback when live inference is unavailable.
+\end{enumerate}
+
+\section{Quality and Operating Requirements}
+Protected requests must authenticate the caller and enforce role or ownership checks at sensitive entry points. Tool execution needs the same action-level policy. Alerts must preserve the matching rule, its reason, and its fixed weight. Controllers, services, repositories, DTOs, and pages divide these responsibilities across the application.
+
+Reliability testing must check failed-login transactions, repeated detection, and recording failures. Performance testing must cover history queries, pagination, and AI requests with several execution cycles. UI screenshots provide no measure of load capacity or detection accuracy.
+
+Report examples omit local configuration values. Timestamp rules use \code{LocalDateTime}, so deployment needs a consistent time convention. Demonstration events must be identifiable alongside real login evidence. The project has no established minimum hardware specification or calibrated attack probabilities.

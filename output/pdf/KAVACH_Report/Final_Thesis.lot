@@ -1,0 +1,24 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {1}{\ignorespaces Declared software stack.\relax }}{4}{table.caption.22}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2}{\ignorespaces Detection conditions and fixed weights.\relax }}{20}{table.caption.61}%
+\contentsline {table}{\numberline {3}{\ignorespaces Thirteen registered tools.\relax }}{22}{table.69}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4}{\ignorespaces Functional validation plan; execution pending.\relax }}{28}{table.83}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5}{\ignorespaces Data dictionary: \nolinkurl {users}.\relax }}{32}{table.123}%
+\contentsline {table}{\numberline {6}{\ignorespaces Data dictionary: \nolinkurl {user_login_logs}.\relax }}{33}{table.125}%
+\contentsline {table}{\numberline {7}{\ignorespaces Data dictionary: \nolinkurl {anomalies}.\relax }}{33}{table.127}%
+\contentsline {table}{\numberline {8}{\ignorespaces Data dictionary: \nolinkurl {ai_analysis_history}.\relax }}{34}{table.129}%
+\contentsline {table}{\numberline {9}{\ignorespaces Data dictionary: \nolinkurl {audit_logs}.\relax }}{35}{table.131}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {10}{\ignorespaces Authentication and user-directory endpoints.\relax }}{36}{table.134}%
+\contentsline {table}{\numberline {11}{\ignorespaces Login-event and anomaly endpoints.\relax }}{37}{table.136}%
+\contentsline {table}{\numberline {12}{\ignorespaces Risk, analytics, dashboard, and audit endpoints.\relax }}{38}{table.138}%
+\contentsline {table}{\numberline {13}{\ignorespaces AI and two-loop agent endpoints.\relax }}{38}{table.140}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }

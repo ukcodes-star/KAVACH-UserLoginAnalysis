@@ -1,0 +1,9 @@
+\chapter{Conclusion and Future Work}
+\section{Conclusion}
+KAVACH combines authenticated login telemetry, six transparent detection rules, a capped 24-hour risk score, security views, audit records, and LLM-assisted investigation. Its two-loop service connects prompts to thirteen application tools and supports deterministic fallback. The repository and screenshots demonstrate implementation and interface design; empirical detection accuracy and production performance remain to be measured.
+
+\noindent\textbf{Limitations.}
+Fixed schedules and string-based IP/device baselines do not establish compromise. Weights are uncalibrated, the brute-force query lacks an explicit upper time bound, and duplicate checks require concurrency testing. Steering is request-local, tools execute sequentially, and operational tools need consistent authorization. Audit persistence alone does not establish tamper resistance.
+
+\noindent\textbf{Future work.}
+Priorities are centralized tool policy, reliable event-time handling, database constraints, and rule-specific integration tests. Further work should add authenticated agent sessions with cancellation/live steering, protected audit retention, bounded queries, and measured concurrency. A labelled evaluation corpus should guide threshold calibration before learned anomaly models, external SIEM integration, or additional authentication factors are introduced.

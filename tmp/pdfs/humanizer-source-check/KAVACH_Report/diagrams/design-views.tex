@@ -1,0 +1,41 @@
+% Each detailed diagram retains its dedicated vector page.
+\newsavebox{\KDiagramRaw}
+\newsavebox{\KDiagramScaled}
+\newcommand{\diagramview}[4]{%
+\clearpage\section{#1}
+#2
+\legendline
+\begin{figure}[!ht]\centering
+\sbox{\KDiagramRaw}{\input{diagrams/#3}}
+\ifdim\wd\KDiagramRaw>\textwidth
+ \sbox{\KDiagramScaled}{\resizebox{\textwidth}{!}{\usebox{\KDiagramRaw}}}
+\else\sbox{\KDiagramScaled}{\usebox{\KDiagramRaw}}\fi
+\ifdim\dimexpr\ht\KDiagramScaled+\dp\KDiagramScaled\relax>16cm
+ \resizebox*{!}{16cm}{\usebox{\KDiagramScaled}}
+\else\usebox{\KDiagramScaled}\fi
+\caption{#4}\end{figure}}
+
+\diagramview{C4 Level 1: System Context}{Account users and administrators access the same KAVACH system with different permissions. The context view groups the frontend, backend, and database inside that boundary. The optional model provider is an external dependency.}{c4-context}{C4 system context: actors, KAVACH, and optional model provider.}
+
+\diagramview{C4 Level 2: Containers}{KAVACH has three C4 containers: the React browser application, the Spring Boot backend, and PostgreSQL. A container here is an independently running application or data store; the repository does not establish a Docker deployment. The localhost proxy follows the Vite configuration.}{c4-containers}{C4 containers: browser application, backend application, database, and provider.}
+
+\diagramview{C4 Level 3: Backend Components}{The backend contains security filters, controllers, domain and AI services, and repositories. Arrows show dependencies, so individual requests need only the relevant branches. Registry tools enter services outside controller methods and need their own authorization checks.}{c4-components}{C4 backend components and external dependencies.}
+
+\diagramview{UML Component Architecture}{The browser and JVM are the execution environments in this component view. Dashed arrows show usage dependencies and required interfaces. Domain services handle identity, monitoring, risk, and audit. AI components provide advisory analysis, orchestration, and operational tools.}{uml-architecture}{UML component architecture with execution boundaries and required interfaces.}
+
+\diagramview{UML Sequence: Authentication and Detection}{Authentication proceeds down the lifelines through calls (solid arrows) and responses (dashed arrows). For known accounts, the service attempts telemetry for successful, incorrect-password, and inactive-account outcomes. Unknown usernames produce an audit failure without a user-linked event. A recorded event can trigger several anomalies.}{sequence-login}{UML login sequence: credentials, audit, telemetry, rules, and response.}
+
+\diagramview{UML Sequence: Two-Loop Investigation}{The outer loop handles the initial task and supplied follow-ups. Each inner invocation allows up to six model or planner cycles. Tools run in sequence and feed results back into the conversation. The registry accesses application services and repositories, with live inference as an optional dependency.}{sequence-agent}{UML agent sequence: request-local queues, bounded planning, tools, and trace.}
+
+\diagramview{Entity-Relationship Diagram}{Users can have zero or more login records and anomalies. Each anomaly requires one user and one login event. AI history has optional links to either entity. The diagram includes mapped fields, keys, and multiplicities; cached identifiers and audit usernames have no declared foreign-key relationships.}{entity}{Detailed entity model with keys, fields, optional links, and multiplicities.}
+
+\diagramview{UML Use-Case Diagram}{An administrator inherits ordinary authenticated use cases and has additional global and account-management operations. The external model service supports AI use cases. These associations describe intended application scope; equivalent restrictions still need enforcement in every agent tool.}{use-cases}{UML use cases: personal investigation, administration, and optional AI support.}
+
+\diagramview{DFD Level 0: Context}{Requests and responses cross the boundary between one KAVACH process and three external entities: the account user, administrator, and optional model provider. Internal database stores first appear in the level 1 decomposition.}{dfd0}{DFD level 0: balanced context inputs and outputs.}
+
+\diagramview{DFD Level 1: Processes and Stores}{Six processes handle identity and accounts, telemetry, detection, risk and analytics, AI investigation, and audit review. D1--D5 identify the five entity groups. Repeated actor and store symbols are aliases for the same entities. Risk is calculated on query; a detection write does not automatically run the risk process.}{dfd1}{DFD level 1: six logical processes, five data-store groups, and external flows.}
+
+\diagramview{DFD Level 2: Anomaly Detection}{Process 3.0 dispatches the event to six independent rules, then checks duplicates before saving each matching anomaly. Solid arrows carry events or candidates; dashed arrows carry history and existence-query feedback. The first event establishes the IP/device baseline. The failure-count query has no explicit upper event-time bound.}{dfd2-detection}{DFD level 2 of process 3.0: six rules, historical reads, and anomaly persistence.}
+
+\diagramview{DFD Level 2: AI Investigation}{Process 5.0 routes requests to dedicated advisory analysis or agent execution. The dedicated path explicitly saves structured history. The agent returns an execution trace and can query or change application data through tools. Each invocation needs checks for account scope and action permissions.}{dfd2-ai}{DFD level 2 of process 5.0: advisory analysis, model/planner, tools, and outputs.}
+

@@ -1,0 +1,279 @@
+{
+  "slides": [
+    [
+      "KAVACH",
+      "User Login Analysis Using LLM",
+      "cover"
+    ],
+    [
+      "The login monitoring problem",
+      "",
+      "problem",
+      [
+        [
+          "A failed login has several possible causes",
+          "It could be a mistyped password or one attempt in a larger pattern."
+        ],
+        [
+          "Context helps decide what warrants attention",
+          "Time, IP, device and recent activity show what changed."
+        ],
+        [
+          "KAVACH brings the evidence together",
+          "Users see their own activity. Administrators can investigate alerts and respond."
+        ]
+      ]
+    ],
+    [
+      "System architecture",
+      "The application records login evidence and makes it available to users and administrators.",
+      "architecture",
+      [
+        [
+          "React interface",
+          "Sign-in and personal risk\nAdministrator dashboard\nAI investigation workspace"
+        ],
+        [
+          "Spring Boot API",
+          "Authentication and access control\nTelemetry and detection rules\nRisk scoring and security tools"
+        ],
+        [
+          "PostgreSQL",
+          "Accounts and login events\nMatched rules and risk weights\nAudit and AI analysis history"
+        ],
+        [
+          "Grok and fallback",
+          "Model inference and deterministic fallback"
+        ]
+      ]
+    ],
+    [
+      "From sign-in to a risk score",
+      "One login event can trigger several rules.",
+      "flow",
+      [
+        [
+          "Authenticate",
+          "Check the account and verify its password."
+        ],
+        [
+          "Record",
+          "Save the outcome, time, IP and device."
+        ],
+        [
+          "Detect",
+          "Check six rules and store each match."
+        ],
+        [
+          "Score",
+          "Sum the account’s recent rule weights."
+        ]
+      ],
+      "Known-account login failures are recorded in a separate transaction. Unknown usernames leave an audit record."
+    ],
+    [
+      "What triggers an alert?",
+      "Each matching rule adds a fixed weight to the account’s recent risk score.",
+      "table",
+      [
+        [
+          "Rule",
+          "When it fires",
+          "Points",
+          "Severity"
+        ],
+        [
+          "Failed login",
+          "A login event is marked failed.",
+          "20",
+          "Low"
+        ],
+        [
+          "Unusual hour",
+          "A login happens between midnight and 04:59.",
+          "25",
+          "Low"
+        ],
+        [
+          "Inactive account",
+          "An inactive account attempts to sign in.",
+          "80",
+          "Critical"
+        ],
+        [
+          "New IP",
+          "The account has history and the IP is unfamiliar.",
+          "40",
+          "Medium"
+        ],
+        [
+          "New device",
+          "The account has history and the device is unfamiliar.",
+          "30",
+          "Medium"
+        ],
+        [
+          "Repeated failures",
+          "At least five failures meet the 10-minute check.",
+          "70",
+          "High"
+        ]
+      ]
+    ],
+    [
+      "Predefined risk scoring formula",
+      "KAVACH calculates a score from 0 to 100 for each account.",
+      "formula"
+    ],
+    [
+      "Worked example · a score of 90",
+      "A failed login also matches the new IP and new device rules.",
+      "risk",
+      [
+        [
+          "Failed login",
+          "20"
+        ],
+        [
+          "New IP",
+          "40"
+        ],
+        [
+          "New device",
+          "30"
+        ],
+        [
+          "Total",
+          "90"
+        ]
+      ],
+      [
+        "Low 0–29",
+        "Medium 30–59",
+        "High 60–79",
+        "Critical 80–100"
+      ],
+      "Illustrative calculation. A score of 90 places the account in the Critical tier."
+    ],
+    [
+      "How the AI assistant helps",
+      "An administrator can ask for an explanation or a summary of recent anomalies.",
+      "flow",
+      [
+        [
+          "Ask",
+          "Request a summary of recent alerts."
+        ],
+        [
+          "Retrieve",
+          "Query authorized login and anomaly records."
+        ],
+        [
+          "Explain",
+          "Show the findings with a record of the tools used."
+        ]
+      ],
+      "Grok can guide the investigation. A deterministic fallback is available if live inference fails."
+    ],
+    [
+      "What users and administrators can do",
+      "Access depends on the caller’s role and the account being reviewed.",
+      "split",
+      [
+        [
+          "User",
+          [
+            "Review personal login history",
+            "Inspect alerts linked to their account",
+            "Check their current security risk"
+          ]
+        ],
+        [
+          "Administrator",
+          [
+            "Review the dashboard and investigation evidence",
+            "Deactivate or reactivate accounts as needed",
+            "Review the audit trail for account actions"
+          ]
+        ]
+      ]
+    ],
+    [
+      "From alert to account decision",
+      "Example investigation · a login from an unfamiliar device",
+      "flow",
+      [
+        [
+          "Open the alert",
+          "Check the rule, severity and linked login event."
+        ],
+        [
+          "Compare activity",
+          "Review the event’s time, IP and device against earlier logins."
+        ],
+        [
+          "Take action",
+          "Review the account status and deactivate it if warranted."
+        ]
+      ],
+      "Account changes are recorded in the audit trail."
+    ],
+    [
+      "Demonstration results",
+      "Administrator dashboard snapshot",
+      "metrics",
+      [
+        [
+          "11",
+          "Monitored users"
+        ],
+        [
+          "32",
+          "Login sessions"
+        ],
+        [
+          "35",
+          "Total anomalies"
+        ]
+      ],
+      "26 of 32 sessions failed (81.3%). The dashboard also showed 8 high and 1 critical anomaly."
+    ],
+    [
+      "What KAVACH delivers",
+      "Login records, rule matches and risk scores give administrators evidence for account decisions.",
+      "split",
+      [
+        [
+          "Implemented",
+          [
+            "Record known-account login activity",
+            "Flag suspicious patterns with six rules",
+            "Support investigation with risk views and an AI assistant"
+          ]
+        ],
+        [
+          "Validation to run",
+          [
+            "Verify rule boundaries and account permissions",
+            "Check concurrent event recording and model fallback",
+            "Measure detection accuracy and response time"
+          ]
+        ]
+      ]
+    ]
+  ],
+  "notes": [
+    "Introduce yourself and KAVACH. The project connects login events to security alerts and makes the underlying evidence available during an investigation.",
+    "Start with a simple example. A failed password might be a typo. Repeated failures or a sudden change in device give the administrator more context about what to investigate.",
+    "Walk from left to right. React is the interface. Spring Boot checks permissions and runs the application logic. PostgreSQL stores the evidence. Grok or the fallback planner can assist when someone asks a question.",
+    "Follow a single sign-in. Spring Boot checks the credentials, attempts to store the event and evaluates the rules. Saving telemetry in a separate transaction helps preserve evidence when authentication fails.",
+    "Use one rule to illustrate the table, such as a new IP adding 40 points. Multiple rules can match the same event. The severity shown here belongs to the rule match.",
+    "Read the formula as ‘the smaller of 100 and the sum of the weights.’ Here u is the account, t is the time the score is calculated, and w(a) is the preset weight for alert a. Include alerts detected during the preceding 24 hours. An empty sum is zero. Source: RiskService.java, calculateUserRisk, and the thesis risk calculation.",
+    "Read the example aloud. Twenty plus forty plus thirty equals ninety, so the account is Critical. Older alerts stop contributing after 24 hours. The weights are fixed priorities.",
+    "Use the example prompt ‘Summarize recent alerts.’ The assistant can query authorized records and show its tool steps. In the implementation, the outer loop handles supplied follow-ups and the inner loop handles tool calls.",
+    "A user sees their own activity. Administrators can review across accounts and decide whether to change account status. The backend checks authorization and records administrative actions.",
+    "Use the new-device alert as a short demo. Open the alert, follow it to the login record and compare the event with the account history. Review the score and use administrator judgment to decide whether to deactivate the account. The audit trail provides a record of account changes.",
+    "Read the three headline numbers and explain that 26 out of 32 sessions failed in the demonstration view. These figures describe the captured demo state. The thesis lists controlled evaluation as future validation.",
+    "Close with the part of the project you can demonstrate end to end: how a login produces evidence for an account decision. Mention the validation work you would run next, then invite questions."
+  ]
+}

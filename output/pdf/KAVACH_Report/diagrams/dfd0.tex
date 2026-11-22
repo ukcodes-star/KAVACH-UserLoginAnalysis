@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+\dn{person}{user}{0}{0}{4.3}{\textbf{E1 Account user}\\Credentials, own-data queries, explanation / AI requests}
+\dn{person}{admin}{9}{0}{4.3}{\textbf{E2 Administrator}\\Global queries, account changes, synthetic events}
+\draw[draw=KBlue,fill=KBlue!8,line width=.9pt] (4.5,-5) ellipse (4cm and 1.45cm);
+\node[align=center,font=\small,text width=6.7cm] (system) at (4.5,-5) {\textbf{0. KAVACH}\\User login analysis using LLM\\Authentication, monitoring, investigation};
+\dn{ai}{provider}{4.5}{-10.3}{6.5}{\textbf{E3 Model provider}\\Optional external inference}
+\draw[dep] (user.south east)--node[edge,right,pos=.45]{Credentials /\\personal requests}(1.8,-3.8);
+\draw[dep] (1,-4.2)--(-1,-2.6)--node[edge,left]{Token / errors /\\own records / advice}(user.west);
+\draw[dep] (admin.south west)--node[edge,left,pos=.45]{Filters / events /\\account actions}(7.2,-3.8);
+\draw[dep] (8,-4.2)--(10,-2.6)--node[edge,right]{Metrics / records /\\action results}(admin.east);
+\draw[dep] (3.2,-6.4)--node[edge,left]{Analysis context /\\tool schemas}(provider.north west);
+\draw[dep] (provider.north east)--node[edge,right]{Generated text /\\tool proposals / errors}(5.8,-6.4);
+\dn{note}{rule}{4.5}{-13.3}{11.4}{\textbf{Context rule:} only one process and external entities appear at level 0. Database stores are internal and first appear at level 1. Token validation and role/ownership policy apply to requests as described in the access-control section.}
+\end{tikzpicture}

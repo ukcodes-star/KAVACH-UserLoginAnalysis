@@ -1,0 +1,30 @@
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces KAVACH implementation architecture.\relax }}{3}{figure.caption.17}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces C4 system context: actors, KAVACH, and optional model provider.\relax }}{7}{figure.caption.34}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces C4 containers: browser application, backend application, database, and provider.\relax }}{8}{figure.caption.36}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces C4 backend components and external dependencies.\relax }}{9}{figure.caption.38}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces UML component architecture with execution boundaries and required interfaces.\relax }}{10}{figure.caption.40}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces UML login sequence: credentials, audit, telemetry, rules, and response.\relax }}{11}{figure.caption.42}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces UML agent sequence: request-local queues, bounded planning, tools, and trace.\relax }}{12}{figure.caption.44}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Detailed entity model with keys, fields, optional links, and multiplicities.\relax }}{13}{figure.caption.46}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces UML use cases: personal investigation, administration, and optional AI support.\relax }}{14}{figure.caption.48}%
+\contentsline {figure}{\numberline {3.9}{\ignorespaces DFD level 0: balanced context inputs and outputs.\relax }}{15}{figure.caption.50}%
+\contentsline {figure}{\numberline {3.10}{\ignorespaces DFD level 1: six logical processes, five data-store groups, and external flows.\relax }}{16}{figure.caption.52}%
+\contentsline {figure}{\numberline {3.11}{\ignorespaces DFD level 2 of process 3.0: six rules, historical reads, and anomaly persistence.\relax }}{17}{figure.caption.54}%
+\contentsline {figure}{\numberline {3.12}{\ignorespaces DFD level 2 of process 5.0: advisory analysis, model/planner, tools, and outputs.\relax }}{18}{figure.caption.56}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Sign-in interface with account-registration tab and authentication form.\relax }}{25}{figure.caption.74}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Administrator dashboard: account counts, login outcomes, trend, and anomaly severity.\relax }}{25}{figure.caption.75}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces User-scoped anomaly list with filters, rule types, severity, and alert weights.\relax }}{26}{figure.caption.77}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Login telemetry showing successful and failed events with account and client metadata.\relax }}{26}{figure.caption.78}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Personal risk view for the USER account, showing the displayed score and profile.\relax }}{27}{figure.caption.80}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces AI workspace with agent-role selection, a 13-tool indicator, and operational playbooks.\relax }}{27}{figure.caption.81}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }

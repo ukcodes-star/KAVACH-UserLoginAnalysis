@@ -1,0 +1,25 @@
+% Editable vector diagram styles. No raster artwork is used.
+\tikzset{
+ dbase/.style={draw,line width=.7pt,rounded corners=2pt,align=center,inner sep=7pt,minimum height=1.05cm,font=\small},
+ person/.style={dbase,draw=KGray,fill=KGray!9},
+ app/.style={dbase,draw=KBlue,fill=KBlue!9},
+ store/.style={dbase,draw=KTeal,fill=KTeal!9,rounded corners=0pt},
+ ai/.style={dbase,draw=KPurple,fill=KPurple!9},
+ check/.style={dbase,draw=KAmber,fill=KAmber!10},
+ alert/.style={dbase,draw=KRed,fill=KRed!8},
+ note/.style={dbase,draw=KGray!65,fill=KGray!4,font=\footnotesize},
+ dep/.style={-{Latex[length=2.1mm]},draw=KBlue,line width=.8pt},
+ ret/.style={dep,dashed},
+ assoc/.style={draw=KGray,line width=.7pt},
+ edge/.style={font=\scriptsize,align=center,fill=white,inner sep=2pt,text=black},
+ boundary/.style={draw=KGray!70,dashed,rounded corners=3pt,line width=.7pt}
+}
+\newcommand{\dn}[6]{\node[#1,text width=#5cm] (#2) at (#3,#4) {#6};}
+\newcommand{\legendline}{\par\noindent{\footnotesize\textcolor{KBlue}{Blue: application}\quad\textcolor{KTeal}{Teal: data}\quad\textcolor{KPurple}{Purple: AI}\quad\textcolor{KAmber}{Amber: decisions}\quad\textcolor{KGray}{Gray: actors / boundaries}}\par}
+\newcommand{\actor}[4]{%
+ \begin{scope}[shift={(#2,#3)},draw=KGray,line width=.9pt]
+ \draw[fill=KGray!8] (0,.43) circle (.18);
+ \draw (0,.25)--(0,-.28) (-.3,.03)--(.3,.03) (0,-.28)--(-.27,-.63) (0,-.28)--(.27,-.63);
+ \coordinate (#1) at (0,0);
+ \node[font=\small,align=center,text width=2.5cm] at (0,1.1) {#4};
+ \end{scope}}

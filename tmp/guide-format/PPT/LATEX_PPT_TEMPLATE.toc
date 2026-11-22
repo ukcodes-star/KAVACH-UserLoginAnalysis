@@ -1,0 +1,8 @@
+\beamer@endinputifotherversion {3.26pt}
+\beamer@sectionintoc {2}{Introduction}{3}{0}{1}
+\beamer@sectionintoc {3}{Type the name of next topic}{4}{0}{2}
+\beamer@sectionintoc {4}{Type the name of next topic}{5}{0}{3}
+\beamer@sectionintoc {5}{Type next section name}{20}{0}{4}
+\beamer@sectionintoc {6}{Results and Discussion}{22}{0}{5}
+\beamer@sectionintoc {7}{Conclusion \& Future Work}{27}{0}{6}
+\beamer@sectionintoc {8}{References}{29}{0}{7}

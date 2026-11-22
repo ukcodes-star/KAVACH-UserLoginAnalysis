@@ -1,0 +1,79 @@
+\chapter{API Quick Reference}
+Every route has the prefix \code{/api}; \code{:name} marks a path variable. Public routes need no token. ADMIN and USER are application roles. Owner permits an administrator or the verified account owner, while Signed-in requires general authentication. These scopes follow source declarations and have not been verified by executed authorization tests. Agent tools need a separate execution policy.
+
+\section{Authentication and Directory}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{5.9cm}>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\caption{Authentication and user-directory endpoints.}\\\toprule Method & Route after /api & Scope & Purpose\\\midrule\endfirsthead
+\toprule Method & Route after /api & Scope & Purpose\\\midrule\endhead
+POST & \code{/auth/register} & Public & Register an active USER; returns 201 and safe account details.\\
+POST & \code{/auth/login} & Public & Verify credentials; return JWT and safe account details.\\
+GET & \code{/users} & ADMIN & List accounts.\\
+POST & \code{/users} & ADMIN & Create an account; returns 201.\\
+GET & \code{/users/:id} & ADMIN & Retrieve an account.\\
+PUT & \code{/users/:id} & ADMIN & Update account using UserRequestDTO.\\
+PATCH & \code{/users/:id/status?active=false} & ADMIN & Set active state; query parameter can be true or false.\\
+DELETE & \code{/users/:id} & ADMIN & Delete account; returns 204 on completion.\\\bottomrule
+\end{longtable}\endgroup
+
+Registration accepts \code{username}, \code{email}, and \code{password}. DTO limits are 3--100 characters for username, 150 for email, and 8--72 for password. Login requires a nonblank username and password with limits of 100/72 characters. A failed login for a known account attempts telemetry recording. An unknown account produces an audit failure without a user-linked login record.
+
+\section{Telemetry and Anomalies}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{5.9cm}>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\caption{Login-event and anomaly endpoints.}\\\toprule Method & Route after /api & Scope & Purpose\\\midrule\endfirsthead
+\toprule Method & Route after /api & Scope & Purpose\\\midrule\endhead
+POST & \code{/login-logs} & ADMIN & Persist an explicit event and invoke detection.\\
+GET & \code{/login-logs} & ADMIN & List login records.\\
+GET & \code{/login-logs/user/:userId} & Owner & Retrieve account-specific logs.\\
+GET & \code{/login-logs/failed} & ADMIN & Retrieve failed events.\\
+GET & \code{/login-logs/recent?hours=24} & ADMIN & Retrieve recent events; hours defaults to 24.\\
+GET & \code{/anomalies} & ADMIN & Paginated list with severity/type filters and sorting.\\
+GET & \code{/anomalies/:id} & Owner & Retrieve one anomaly; check its owning account.\\
+GET & \code{/anomalies/user/:userId} & Owner & List an account's anomalies.\\
+GET & \code{/anomalies/user/:userId/paginated} & Owner & Paginated account anomalies and filters.\\
+GET & \code{/anomalies/severity/:severity} & ADMIN & List anomalies by severity.\\
+GET & \code{/anomalies/type/:type} & ADMIN & List anomalies by rule type.\\\bottomrule
+\end{longtable}\endgroup
+
+Event creation requires \code{userId}, \code{ipAddress}, and \code{status}, with optional \code{loginTime}, \code{location}, and \code{device}. Anomaly queries default to \code{page=0}, \code{size=10}, \code{sortBy=detectedAt}, and \code{direction=desc}. Page must be nonnegative and size must be 1--100. Sorting accepts \code{id}, \code{detectedAt}, \code{riskScore}, \code{severity}, and \code{anomalyType}.
+
+\section{Risk, Dashboard, and Audit}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{5.9cm}>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\caption{Risk, analytics, dashboard, and audit endpoints.}\\\toprule Method & Route after /api & Scope & Purpose\\\midrule\endfirsthead
+\toprule Method & Route after /api & Scope & Purpose\\\midrule\endhead
+GET & \code{/risk/user/:userId} & Owner & Account's 24-hour capped risk score and tier.\\
+GET & \code{/risk/dashboard} & ADMIN & Overall risk/severity summary.\\
+GET & \code{/dashboard/security} & ADMIN & Combined security dashboard.\\
+GET & \code{/dashboard/top-risky-users} & ADMIN & Ranked watchlist, up to ten accounts.\\
+GET & \code{/dashboard/recent-critical-anomalies} & ADMIN & Recent critical anomalies.\\
+GET & \code{/analytics/logins} & Signed-in & Login counts, failure rate, seven-day trend.\\
+GET & \code{/audit-logs} & ADMIN & All persisted audit records.\\
+GET & \code{/audit-logs/user/:username} & ADMIN & Audit records for a username.\\
+GET & \code{/audit-logs/action/:action} & ADMIN & Audit records for an action.\\\bottomrule
+\end{longtable}\endgroup
+
+Login analytics inherits the security chain's authentication requirement and has no ADMIN-only controller annotation. The dashboard routes separately require ADMIN access.
+
+\section{AI Analysis and Agent Execution}
+\begingroup\footnotesize\setstretch{1.0}\setlength{\parskip}{0pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{5.9cm}>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\caption{AI and two-loop agent endpoints.}\\\toprule Method & Route after /api & Scope & Purpose\\\midrule\endfirsthead
+\toprule Method & Route after /api & Scope & Purpose\\\midrule\endhead
+GET & \code{/ai/status} & ADMIN / USER & Model readiness and mode information.\\
+POST & \code{/ai/analyze/anomaly/:anomalyId} & Owner & Dedicated anomaly explanation; alias below.\\
+POST & \code{/ai/analyze-anomaly/:anomalyId} & Owner & Alias for anomaly explanation.\\
+GET / POST & \code{/ai/analyze/security-summary} & ADMIN & Global security summary; also \code{/ai/summary}.\\
+GET & \code{/ai/history} & ADMIN / USER & Paginated history; service scopes ordinary users to their own records.\\
+GET & \code{/ai/history/:id} & ADMIN / USER & One history record; service checks cached owner where present.\\
+POST & \code{/ai/analyze-user/:userId} & Owner & Dedicated user-risk analysis.\\
+POST & \code{/ai/agent-loop} & ADMIN / USER & Execute prompt and queued steering/follow-ups; return trace.\\
+GET & \code{/ai/agent-tools} & ADMIN / USER & List registered tools, schemas, roles, and safety metadata.\\
+POST & \code{/ai/chat} & ADMIN / USER & Run agent from prompt/context; return simplified chat response.\\\bottomrule
+\end{longtable}\endgroup
+
+
+Agent execution requires a nonblank prompt. One request can also supply context, a role, steering messages, and follow-up arrays. The roles are investigator, operator, and collaborative. Responses contain final text, execution steps, tool names, loop counts, model/mode, and completion time.
+
+Reads and analysis normally return 200. Declared creation routes return 201, and deletion returns 204. Errors use 400 for invalid input, 401 for credentials or tokens, 403 for denied access, 404 for a missing resource, and 409 for duplicate registration. Operational tools can change data in both fallback and live inference modes.

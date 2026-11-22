@@ -1,0 +1,31 @@
+\chapter{Conclusion and Future Work}
+\section{Conclusion}
+KAVACH integrates authentication telemetry, six deterministic rules, recent user risk, dashboard summaries, audit records, and a tool-assisted AI workflow. Frontend pages, API controllers, services, repositories, and entities make the processing stages traceable.
+
+The detector provides explicit reasons and fixed weights. The risk service summarizes recent evidence in a bounded score. Structured explanations and the two-loop interface add an investigation mechanism with deterministic fallback. Together, these components support a practical application-level security-monitoring demonstration.
+
+The evidence supports implementation conclusions, not production-readiness claims, detection accuracy, or measured latency improvements. This report identifies the tests required to assess those properties instead of assigning unsupported figures.
+
+\section{Current Limitations}
+The fixed off-hours rule does not learn personal schedules. IP/device baselines use strings, can include failures, and do not establish hardware identity or geographic plausibility. Weights lack empirical calibration, and multiple alerts from a single event can saturate risk quickly.
+
+The brute-force query has no explicit event-time upper bound. Time conventions and historical input need careful handling. Some queries read full history, and duplicate prevention requires concurrency validation. Agent tools combine queries and state changes, making consistent authorization essential. Steering is request-local, execution is sequential, and the frontend timeout may be shorter than a multi-cycle agent request.
+
+\section{Future Direction of Work}
+\subsection{Centralized Tool Policy}
+Check authenticated principal, action, resource ownership, and arguments before every tool invocation. Introduce review or approval for consequential changes where appropriate. Record the initiating principal, target, outcome, and rationale instead of relying only on generated narrative.
+
+\subsection{Detection and Data Quality}
+Adopt a consistent time-zone-aware timestamp convention, enforce intended event windows, and test out-of-order input. Consider successful-login baselines and bounded history for IP/device rules. Calibrate thresholds using representative labelled data and publish false positives as well as detections.
+
+\subsection{Audit Integrity and Reliability}
+Add appropriate uniqueness constraints, transaction tests, and telemetry-failure monitoring. Define retention and access controls. If stronger integrity is needed, evaluate append-only storage, external export, or tamper-evident verification instead of assuming database persistence supplies it.
+
+\subsection{Agent Sessions and Interaction}
+Introduce authenticated job/session identifiers and a channel for progress, steering, and cancellation. Bound outer-loop work and request size; make operational tools idempotent where possible. Report the actual inference/fallback mode used for each result and align client timeouts with server execution.
+
+\subsection{Scale and Evaluation}
+Replace growing history scans with bounded queries, review indexes with query plans, and measure concurrent load. Build integration tests and a labelled evaluation corpus before adding learned anomaly models or external SIEM ingestion. Additional authentication factors and stronger browser token handling are further deployment options.
+
+\section{Closing Perspective}
+The project's principal contribution is the integration of transparent detection and recent risk with an inspectable investigation interface. Completing validation and enforcing policy at the tool boundary would provide a firmer basis for evaluating use beyond a development demonstration.

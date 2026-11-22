@@ -1,0 +1,36 @@
+\begin{tikzpicture}
+\dn{person}{e1}{-2.1}{0}{2.4}{\scriptsize\textbf{E1 / E2}\\User / Admin}
+\dn{app}{p1}{3}{0}{4.1}{\textbf{1.0 Identity and accounts}\\\scriptsize Register / authenticate; verify current account; directory changes}
+\dn{store}{d1}{10}{0}{3.5}{\textbf{D1 Users}\\\scriptsize Identity, role, active state}
+\dn{person}{e2}{-2.1}{-2.6}{2.4}{\scriptsize\textbf{E2 Admin}\\Synthetic event}
+\dn{app}{p2}{3}{-2.6}{4.1}{\textbf{2.0 Record telemetry}\\\scriptsize Real auth outcome or explicit event; persist login record}
+\dn{store}{d2}{10}{-2.6}{3.5}{\textbf{D2 Login logs}\\\scriptsize Timestamp, user, status, client}
+\dn{app}{p3}{3}{-5.2}{4.1}{\textbf{3.0 Detect anomalies}\\\scriptsize Six rules; duplicate check; fixed weights and severity}
+\dn{store}{d3}{10}{-5.2}{3.5}{\textbf{D3 Anomalies}\\\scriptsize Trigger, event, weight, time}
+\dn{person}{e4}{-2.1}{-7.8}{2.4}{\scriptsize\textbf{E1 / E2}\\Permitted query}
+\dn{app}{p4}{3}{-7.8}{4.1}{\textbf{4.0 Risk and analytics}\\\scriptsize 24-hour risk; login trend; severity totals and watchlist}
+\dn{store}{d34}{10}{-7.8}{3.5}{\textbf{D2 / D3 [repeated]}\\\scriptsize Login and anomaly reads}
+\dn{person}{e5}{-2.1}{-10.4}{2.4}{\scriptsize\textbf{E1 / E2}\\AI request}
+\dn{ai}{p5}{3}{-10.4}{4.1}{\textbf{5.0 AI investigation}\\\scriptsize Explanations; bounded tools; advisory history}
+\dn{store}{d4}{10}{-10.4}{3.5}{\textbf{D4 AI history}\\\scriptsize Dedicated analysis records}
+\dn{person}{e6}{-2.1}{-13}{2.4}{\scriptsize\textbf{E2 Admin}\\Audit query}
+\dn{app}{p6}{3}{-13}{4.1}{\textbf{6.0 Audit review}\\\scriptsize Filter persisted security and account events}
+\dn{store}{d5}{10}{-13}{3.5}{\textbf{D5 Audit logs}\\\scriptsize Actor, action, details, time}
+\dn{ai}{llm}{10}{-15.7}{3.5}{\textbf{E3 Provider}\\\scriptsize Optional live model}
+\draw[dep,<->](e1)--node[edge,above]{Credentials / token}(p1);
+\draw[dep,<->](p1)--node[edge,above]{Lookup / update}(d1);
+\draw[dep](p1)--node[edge,right]{Auth outcome}(p2);
+\draw[dep](e2)--node[edge,above]{Event}(p2);
+\draw[dep](p2)--node[edge,above]{Save event}(d2);
+\draw[dep](p2)--node[edge,right]{Saved event}(p3);
+\draw[dep](d2.south)--(10,-3.9)--node[edge,above]{History}(6.9,-3.9)--(p3.north east);
+\draw[dep](p3)--node[edge,above]{Triggered records}(d3);
+\draw[dep,<->](e4)--node[edge,above]{Filters / results}(p4);
+\draw[dep](d34)--node[edge,above]{Read aggregates}(p4);
+\draw[dep,<->](e5)--node[edge,above]{Prompt / trace}(p5);
+\draw[dep,<->](p5)--node[edge,above]{Analysis history}(d4);
+\draw[dep,<->](e6)--node[edge,above]{Filters / results}(p6);
+\draw[dep](d5)--node[edge,above]{Audit records}(p6);
+\draw[dep](p1.north)--(3,1.4)--(13,1.4)--node[edge,rotate=90,above]{Authentication / account audit events}(13,-13)--(d5.east);
+\draw[dep,<->](p5.south east)--(6.3,-11.7)--(6.3,-15.7)--node[edge,above]{Context / output}(llm.west);
+\end{tikzpicture}

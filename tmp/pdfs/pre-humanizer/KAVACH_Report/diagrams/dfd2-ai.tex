@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+\dn{person}{request}{4.7}{0}{9.8}{\textbf{E1 / E2 Authorized client}\\Prompt / context / role / request-local steering and follow-ups}
+\dn{ai}{route}{4.7}{-2.3}{9.8}{\textbf{5.1 Route AI request}\\\scriptsize Dedicated explanation / user analysis / summary, or agent-loop execution}
+\dn{check}{access}{0}{-5.2}{4.8}{\textbf{5.2 Dedicated analysis}\\\scriptsize Resource access check; sanitize context; invoke inference or deterministic advisory}
+\dn{ai}{init}{9.4}{-5.2}{4.8}{\textbf{5.3 Initialize agent}\\\scriptsize Local conversation and queues; select role; outer continuation loop}
+\dn{store}{history}{0}{-8.5}{4.8}{\textbf{D4 AI history}\\\scriptsize Store dedicated analysis summary, explanation, indicators, advisory metadata}
+\dn{ai}{plan}{9.4}{-8.5}{4.8}{\textbf{5.4 Inner model / planner cycle}\\\scriptsize Consume steering; infer next text / calls; up to six iterations}
+\dn{ai}{model}{4.7}{-11.4}{4.2}{\textbf{E3 Model provider}\\\scriptsize Optional inference; local fallback on unavailability}
+\dn{app}{tools}{9.4}{-14.5}{4.8}{\textbf{5.5 Resolve and execute tools}\\\scriptsize Registry lookup; sequential invocation; services and repositories; capture result/error}
+\dn{app}{result}{0}{-14.5}{4.8}{\textbf{5.6 Assemble response}\\\scriptsize Advisory DTO or agent final text + steps + mode + loop counts}
+\dn{store}{data}{9.4}{-17.8}{4.8}{\textbf{D1 / D2 / D3 / D5} [repeated]\\\scriptsize Tool reads and permitted account/event writes}
+\draw[dep](request)--(route);
+\draw[dep](route)--(access);\draw[dep](route)--(init);
+\draw[dep](access)--node[edge,left]{Persist analysis}(history);
+\draw[dep](history)--node[edge,left,pos=.25]{Analysis DTO}(result);
+\draw[dep](init)--(plan);
+\draw[dep,<->](plan.west)--(5.9,-8.5)--node[edge,rotate=90,above]{Context / calls}(5.9,-10.3)--(model.north);
+\draw[dep,<->](access.west)--(-3.3,-5.2)--node[edge,rotate=90,above]{Analysis context / JSON}(-3.3,-11.4)--(model.west);
+\draw[dep](plan.east)--(12.5,-8.5)--node[edge,right]{Tool calls}(12.5,-14.5)--(tools.east);
+\draw[ret](tools.north)--node[edge,right]{Tool feedback}(plan.south);
+\draw[dep,<->](tools)--node[edge,right]{Data / action results}(data);
+\draw[dep](plan.west)--(6.6,-8.5)--(6.6,-13.0)--node[edge,above]{Completed loop}(result.north east);
+\draw[ret](result.west)--(-4.3,-14.5)--(-4.3,0)--node[edge,above]{Response}(request.west);
+\end{tikzpicture}

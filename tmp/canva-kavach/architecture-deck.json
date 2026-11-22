@@ -1,0 +1,318 @@
+{
+  "slides": [
+    [
+      "KAVACH",
+      "User Login Analysis Using LLM",
+      "cover"
+    ],
+    [
+      "Problem Statement",
+      "",
+      "problem",
+      [
+        [
+          "A failed login is hard to interpret on its own",
+          "It could be a typo or part of repeated password guessing."
+        ],
+        [
+          "Suspicious patterns span multiple login records",
+          "Administrators need to compare failed attempts, login times, IP addresses, and devices."
+        ],
+        [
+          "Failed attempts are important evidence",
+          "If their details are missing, administrators can miss the pattern."
+        ],
+        [
+          "Raw logs make it hard to prioritize",
+          "Administrators need to know which accounts to investigate first and why."
+        ]
+      ]
+    ],
+    [
+      "What KAVACH Solves",
+      "",
+      "grid",
+      [
+        [
+          "Preserves failed-login evidence",
+          "For known accounts, KAVACH records failed attempts in a separate transaction from authentication."
+        ],
+        [
+          "Detects suspicious activity",
+          "Six predefined rules flag patterns such as repeated failures, unfamiliar devices, and off-hours logins."
+        ],
+        [
+          "Prioritizes accounts for review",
+          "KAVACH adds anomaly points from the last 24 hours and caps the score at 100."
+        ],
+        [
+          "Helps administrators decide what to do",
+          "Grok explains the alert in plain language and suggests what to check. The administrator decides whether to deactivate the account."
+        ]
+      ]
+    ],
+    [
+      "KAVACH System Architecture",
+      "React calls the Spring Boot API. PostgreSQL stores login evidence, and Grok explains selected alerts.",
+      "architecture-detail",
+      {
+        "client": [
+          [
+            "Sign-in and registration",
+            "Submit credentials and receive a token on sign-in."
+          ],
+          [
+            "User views",
+            "Review personal login history, alerts, and risk."
+          ],
+          [
+            "Admin views",
+            "Review the dashboard, manage accounts, and inspect reports."
+          ]
+        ],
+        "services": [
+          [
+            "Authentication and access",
+            "Verify passwords with BCrypt. Validate JWTs and permissions."
+          ],
+          [
+            "Login telemetry",
+            "Store outcome, timestamp, IP, and device in a separate transaction."
+          ],
+          [
+            "Anomaly detection",
+            "Apply six rules and link each match to its login record."
+          ],
+          [
+            "Risk and dashboard",
+            "Aggregate 24-hour scores and supply the admin dashboard."
+          ],
+          [
+            "AI report service",
+            "Send selected alert details to Grok and parse its JSON report."
+          ]
+        ],
+        "tables": [
+          "users",
+          "user_login_logs",
+          "anomalies",
+          "audit_logs",
+          "ai_analysis_history"
+        ]
+      }
+    ],
+    [
+      "From sign-in to a risk score",
+      "One login event can trigger several rules.",
+      "flow",
+      [
+        [
+          "Authenticate",
+          "Check the account and verify its password."
+        ],
+        [
+          "Record",
+          "Save the outcome, time, IP and device."
+        ],
+        [
+          "Detect",
+          "Check six rules and store each match."
+        ],
+        [
+          "Score",
+          "Sum the account’s recent rule weights."
+        ]
+      ],
+      "Known-account login failures are recorded in a separate transaction. Unknown usernames leave an audit record."
+    ],
+    [
+      "Six predefined rules assign alert points",
+      "One login can match several rules. Each match has its own points and severity.",
+      "rules",
+      [
+        [
+          "Brute force attack",
+          "BRUTE_FORCE",
+          "A failed login brings the account to at least 5 failures in 10 minutes.",
+          "+70",
+          "High"
+        ],
+        [
+          "Inactive account login",
+          "INACTIVE_USER_LOGIN",
+          "The account’s active flag is false.",
+          "+80",
+          "Critical"
+        ],
+        [
+          "New IP address",
+          "NEW_IP",
+          "The IP is unseen and at least one earlier event exists.",
+          "+40",
+          "Medium"
+        ],
+        [
+          "New device or browser",
+          "NEW_DEVICE",
+          "The device is unseen and at least one earlier event exists.",
+          "+30",
+          "Medium"
+        ],
+        [
+          "Unusual login time",
+          "UNUSUAL_LOGIN_TIME",
+          "The login occurs from 00:00 through 04:59.",
+          "+25",
+          "Low"
+        ],
+        [
+          "Failed login",
+          "FAILED_LOGIN",
+          "The event is marked FAILED, including an incorrect password.",
+          "+20",
+          "Low"
+        ]
+      ]
+    ],
+    [
+      "How KAVACH calculates account risk",
+      "The system assigns preset points per anomaly, then combines them into one account score.",
+      "formula"
+    ],
+    [
+      "What each risk tier means",
+      "The composite score sets the account’s investigation priority.",
+      "tiers",
+      [
+        [
+          "LOW",
+          "0–29",
+          "Routine review",
+          "Little or no recent anomaly weight."
+        ],
+        [
+          "MEDIUM",
+          "30–59",
+          "Monitor",
+          "Compare the activity with the account’s history."
+        ],
+        [
+          "HIGH",
+          "60–79",
+          "Prioritize investigation",
+          "The dashboard counts the account as risky."
+        ],
+        [
+          "CRITICAL",
+          "80–100",
+          "Review promptly",
+          "Assess the evidence and consider quarantine."
+        ]
+      ]
+    ],
+    [
+      "Worked example · from 85 to 100",
+      "Illustrative scenario for john_doe. The account has a login history and uses a known device.",
+      "example"
+    ],
+    [
+      "How AI Helps",
+      "Grok turns an anomaly record into a report that helps administrators understand the risk.",
+      "ai-report",
+      [
+        [
+          "1  Backend sends alert details",
+          "{\n  \"anomalyType\": \"NEW_IP\",\n  \"riskScore\": 40,\n  \"severity\": \"MEDIUM\"\n}",
+          "Example fields from one alert"
+        ],
+        [
+          "2  Grok explains the alert",
+          "Grok uses the anomaly and its linked login details to explain why the activity may be suspicious.",
+          "The backend sends the details in a JSON request."
+        ],
+        [
+          "3  Admin sees what to check",
+          "Why it matters\nA new IP may indicate that someone else tried to sign in.\n\nWhat to check\nCompare the IP and device with earlier logins.",
+          "Example report excerpt"
+        ]
+      ]
+    ],
+    [
+      "From Login Alert to Account Decision",
+      "Example investigation · a login from an unfamiliar device",
+      "account-review",
+      [
+        "Users can review their own login history, alerts, and risk score.",
+        [
+          [
+            "Open the alert",
+            "Check which rule fired and open the linked login event."
+          ],
+          [
+            "Compare the evidence",
+            "Compare the event’s time, IP, and device with earlier logins."
+          ],
+          [
+            "Decide whether to act",
+            "Deactivate the account if the evidence warrants it. The audit trail records the action."
+          ]
+        ]
+      ]
+    ],
+    [
+      "Demonstration Results",
+      "KAVACH administrator dashboard · 17 November 2026",
+      "dashboard-demo",
+      [
+        [
+          "11",
+          "Monitored users"
+        ],
+        [
+          "32",
+          "Login sessions"
+        ],
+        [
+          "35",
+          "Total anomalies"
+        ]
+      ],
+      "C:/Users/acer/Pictures/Screenshots/Screenshot 2026-11-17 201911.png"
+    ],
+    [
+      "Conclusion and Next Steps",
+      "",
+      "closing",
+      "KAVACH helps administrators decide which accounts to investigate and shows the login evidence behind each alert.",
+      [
+        [
+          "Rule boundaries",
+          "Check the exact time and failure-count thresholds."
+        ],
+        [
+          "Detection accuracy",
+          "Measure false positives and missed alerts on labeled login scenarios."
+        ],
+        [
+          "Response time",
+          "Measure how long it takes to record a login and surface an alert."
+        ]
+      ]
+    ]
+  ],
+  "notes": [
+    "Introduce yourself and KAVACH. The project connects login events to security alerts and makes the underlying evidence available during an investigation.",
+    "Start with a failed login. A typo and a password-guessing attempt can look alike until you compare other attempts for the account. Explain why the failed outcome, time, IP and device matter. If failed-attempt evidence is missing, administrators can miss the pattern. The practical challenge is deciding which accounts to investigate first and why.",
+    "Walk through the four ways KAVACH addresses the problem. It records known-account failures in a separate transaction, checks six predefined rules, and uses the last 24 hours of anomaly points to rank account risk. Grok turns an alert’s details into a readable report and suggests what to check. The administrator decides whether to deactivate the account.",
+    "Start at React: the user signs in and Spring Boot verifies the password with BCrypt and issues a JWT. Protected API calls carry that token, and the backend checks the account state and permissions. For a known account, login telemetry is saved in its own transaction and passed to the six-rule detector. Alerts reference both the account and the originating login record. The risk service reads the last 24 hours of alerts for the dashboard. When a user selects Analyze with AI Engine, the backend prepares a prompt from the selected anomaly and linked login details, sends it in a JSON request to Grok, and parses the JSON report. PostgreSQL stores account, telemetry, anomaly, audit, and report history records. Grok provides an explanation, while the backend calculates the score.",
+    "Follow a single sign-in. Spring Boot checks the credentials, attempts to store the event and evaluates the rules. Saving telemetry in a separate transaction helps preserve evidence when authentication fails.",
+    "The engine evaluates all six rules independently. Failed Login checks the stored FAILED status, which also applies to an inactive account’s failed event. IP and device checks compare against at least one earlier event because the current stored event is included in the history count. The brute-force description assumes chronological live login events. The repository query uses a lower cutoff only, so backdated events need separate validation.",
+    "First, an anomaly gets the preset points for its rule. Then RiskService sums all stored anomalies detected for the account in the preceding 24 hours. RiskService caps the result at 100. Alert severity describes an individual rule match. The risk tier describes the account’s composite score, and the score falls as old anomalies leave the window.",
+    "Explain the four exact boundaries. High and Critical accounts meet the dashboard Risky Accounts threshold of at least 60. The ranked watchlist is a separate query that returns up to ten users with positive recent scores in descending score order. An authorized administrator decides whether to deactivate the account. Scores indicate investigation priority.",
+    "Assume zero starting risk, no previous recent failures and a familiar device across all attempts. At 02:15 an incorrect password from a new IP produces 20 + 25 + 40 = 85. At 02:16 five further failures from the same IP add 5 × (20 + 25) = 225. The fifth and sixth failures overall each add 70 for brute force. The total is 85 + 225 + 140 = 450, capped at 100. The account reaches the cap as early as the next failure. The score qualifies the account for the dashboard Risky Accounts count, and an administrator can review the evidence and decide whether to quarantine it. The AI assistant can help summarize the evidence on request.",
+    "Open an alert and select Analyze with AI Engine. The backend loads the anomaly and linked login details, builds a prompt, and sends it to Grok in a JSON request. Grok returns a structured report that the dashboard displays in plain language, including the risk explanation, suspicious indicators, possible implications, and recommended checks. In the new IP example, the administrator can compare the event with the user’s normal login history. The 40 points come from the detection rule and contribute to the separate composite account score.",
+    "Explain the role difference first. A user can check their own login history, alerts and risk. An administrator can review alerts across accounts. For a new-device alert, open the linked login record, compare the device and other details with the account’s history, and decide whether to deactivate the account. Account changes are recorded in the audit trail, and administrators can reactivate the account when appropriate.",
+    "Point to the failed-login card: 26 of 32 sessions failed, or 81.3%. An administrator can open Login Telemetry and look for repeated failures on the same account, then inspect any matching anomalies. The dashboard snapshot also shows 35 stored anomalies, including 8 high and 1 critical, and 0 accounts above the recent-risk threshold. These counts cover different views. This is demonstration data.",
+    "Close by explaining what the project makes possible: an administrator can move from an account risk score to the actual login evidence. Then mention the next tests: check the rule boundaries, measure false positives and missed alerts, and measure time from login to a visible alert. Invite questions."
+  ]
+}

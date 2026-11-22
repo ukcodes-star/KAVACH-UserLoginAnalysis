@@ -1,0 +1,38 @@
+\clearpage\section{Application Screenshots}
+Six captures were selected to show the entry point, overall monitoring, event investigation, personal account scope, and AI workspace. They are reproduced from candidate-provided screenshots without changing the displayed content. Counts and scores describe the captured demonstration state, not evaluation results.
+
+\begin{figure}[!ht]\centering
+\includegraphics[width=.75\textwidth]{images/screenshot-login.png}
+\caption{Sign-in interface with account-registration tab and authentication form.}\label{fig:screen-login}
+\end{figure}
+
+\begin{figure}[!ht]\centering
+\includegraphics[width=\textwidth]{images/screenshot-dashboard.png}
+\caption{Administrator dashboard: account counts, login outcomes, trend, and anomaly severity.}\label{fig:screen-dashboard}
+\end{figure}
+
+\clearpage\subsection{Anomaly Investigation and Login Telemetry}
+The anomaly view exposes rule matches and per-alert weights, while the telemetry view shows the underlying login-event fields. Filters and action buttons are visible entry points; the captures do not show the outcomes of clicking those actions.
+
+\begin{figure}[!ht]\centering
+\includegraphics[width=\textwidth]{images/screenshot-anomalies.png}
+\caption{User-scoped anomaly list with filters, rule types, severity, and alert weights.}\label{fig:screen-anomalies}
+\end{figure}
+
+\begin{figure}[!ht]\centering
+\includegraphics[width=\textwidth]{images/screenshot-telemetry.png}
+\caption{Login telemetry showing successful and failed events with account and client metadata.}\label{fig:screen-telemetry}
+\end{figure}
+
+\clearpage\subsection{Personal Risk and AI Workspace}
+The personal view displays the signed-in account's risk profile. Historical anomaly counts and the recent 24-hour risk score use different horizons. Interface subtitles such as ``Bayesian'' or ``neural'' do not alter the fixed-rule detector and additive score documented in Chapter 4. The AI capture shows its initial console state rather than a completed model or tool execution.
+
+\begin{figure}[!ht]\centering
+\includegraphics[width=\textwidth]{images/screenshot-personal-risk.png}
+\caption{Personal risk view for the USER account, showing the displayed score and profile.}\label{fig:screen-risk}
+\end{figure}
+
+\begin{figure}[!ht]\centering
+\includegraphics[width=\textwidth]{images/screenshot-ai-console.png}
+\caption{AI workspace with agent-role selection, a 13-tool indicator, and operational playbooks.}\label{fig:screen-ai}
+\end{figure}

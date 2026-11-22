@@ -1,0 +1,108 @@
+% Restore modern floats after loading the original institutional class.
+\makeatletter\let\KavachOriginalFloat\@xfloat\makeatother
+\documentclass[a4paper,12pt]{nitathesis}
+\makeatletter\let\@xfloat\KavachOriginalFloat\makeatother
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx,times,amsmath,amssymb}
+\usepackage[Sonny]{fncychap}
+\usepackage{booktabs,tabularx,longtable,array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{listings}
+\usepackage[hidelinks,breaklinks,hypertexnames=false]{hyperref}
+\usepackage{etoolbox}
+\input{metadata}
+\hypersetup{pdftitle={\ReportTitle},pdfauthor={\CandidateName},pdfsubject={MCA project report}}
+\makeatletter
+\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{\vspace*{0\p@}}{}{}
+\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{\vspace*{0\p@}}{}{}
+\makeatother
+\setlength{\headheight}{15pt}
+\setlength{\parskip}{7pt}
+\setlength{\emergencystretch}{3em}
+\widowpenalty=10000\clubpenalty=10000
+\numberwithin{figure}{chapter}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhf{}\fancyhead[RO,LE]{\small\nouppercase{\leftmark}}\fancyfoot[C]{\thepage}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter. #1}{}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,columns=fullflexible,keepspaces=true,frame=single,showstringspaces=false}
+\definecolor{KBlue}{HTML}{164E87}
+\definecolor{KTeal}{HTML}{087F8C}
+\definecolor{KPurple}{HTML}{7041A5}
+\definecolor{KAmber}{HTML}{9A6500}
+\definecolor{KRed}{HTML}{B33D59}
+\definecolor{KGray}{HTML}{526174}
+\tikzset{box/.style={draw=KBlue,fill=KBlue!7,rounded corners=2pt,align=center,text width=4.2cm,minimum height=1.1cm,font=\small},flow/.style={-{Latex[length=2.5mm]},thick,draw=KBlue}}
+\input{diagrams/styles}
+\newcommand{\code}[1]{\nolinkurl{#1}}
+\newcommand{\fronttitle}[1]{\clearpage\thispagestyle{plain}\begin{center}\LARGE\bfseries #1\end{center}\vspace{1.2cm}}
+\newcommand{\facultyblock}[3]{\begin{minipage}[t]{0.46\textwidth}\centering\rule{6cm}{0.4pt}\\#1\\#2\\#3\\\small Computer Science and Engineering\\NIT Agartala\end{minipage}}
+\begin{document}
+\pagenumbering{roman}\pagestyle{plain}
+\begin{titlepage}\centering
+{\LARGE\bfseries\MakeUppercase{\ReportTitle}\par}
+\vspace{2.2cm}\includegraphics[width=4.4cm]{images/nita_logo.png}\par
+\vspace{1.5cm}{\large\bfseries\DegreeName\ Project Report\par}
+\vspace{0.8cm}{\large\bfseries\CandidateName\ (\RollNumber)\par}\vfill
+{\bfseries COMPUTER SCIENCE \& ENGINEERING DEPARTMENT\\NATIONAL INSTITUTE OF TECHNOLOGY, AGARTALA\\INDIA--799046\par}
+\vspace{0.6cm}{\bfseries\SubmissionDate\par}\end{titlepage}
+\begin{titlepage}\centering
+{\LARGE\bfseries\MakeUppercase{\ReportTitle}\par}\vspace{0.8cm}
+{\bfseries\itshape Report submitted to\\National Institute of Technology, Agartala\\for the award of the degree of\\\large\DegreeName\par}\vspace{0.5cm}
+{\bfseries\itshape by\\\CandidateName\ (\RollNumber)\par}\vspace{0.7cm}
+{\bfseries\itshape Under the Guidance of\\\SupervisorName\\\SupervisorDesignation\par}
+\vspace{0.7cm}\includegraphics[width=4cm]{images/nita_logo.png}\par\vfill
+{\bfseries COMPUTER SCIENCE \& ENGINEERING DEPARTMENT\\NATIONAL INSTITUTE OF TECHNOLOGY AGARTALA\par}
+\vspace{0.4cm}{\bfseries\SubmissionDate\par}\end{titlepage}
+\setcounter{page}{3}
+\fronttitle{Dedicated To}
+\begin{center}\begin{minipage}{0.86\textwidth}
+My project supervisor, \SupervisorName, \SupervisorDesignation, CSED, NIT Agartala, for his continuous guidance, valuable insights, encouragement, and unwavering trust throughout this journey. I also extend my gratitude to all faculty members of the department whose teachings and support have shaped my professional growth and helped me reach this milestone. This dedication is also extended to everyone who contributed in any way to the development of this project and supported me along the way.
+\end{minipage}\end{center}
+\fronttitle{REPORT APPROVAL FOR \DegreeShort}
+This report entitled ``\ReportTitle'', submitted by \CandidateName\ (\RollNumber), is presented in partial fulfilment of the requirements for the award of the \textbf{\DegreeName} degree at the National Institute of Technology, Agartala.
+\vspace{2.5cm}\par\noindent
+\facultyblock{\SupervisorName}{(Project Supervisor)}{\SupervisorDesignation}\hfill\facultyblock{\HodName}{(Head of the Department)}{\HodDesignation}
+\vspace{2cm}\par\noindent Date: \rule{5cm}{0.4pt}\\Place: NIT Agartala
+\fronttitle{DECLARATION}
+I declare that the work presented in this report titled ``\ReportTitle'', submitted to the Department of Computer Science and Engineering, National Institute of Technology, Agartala, for the award of the \DegreeName\ degree, represents my work and that sources used in preparing the report have been acknowledged. I understand the requirements of academic honesty and integrity and the need to avoid fabrication of results, data, or references.
+
+This declaration is to be reviewed and signed by the candidate before submission.
+\vspace{2cm}\par\hfill\begin{minipage}{7cm}\centering\rule{6cm}{0.4pt}\\\CandidateName\\\RollNumber\end{minipage}
+\vspace{1.2cm}\par\noindent\SubmissionDate\\NIT Agartala
+\fronttitle{CERTIFICATE}
+The report titled ``\ReportTitle'', submitted by \CandidateName\ (\RollNumber), is presented for certification of the project work carried out under the guidance of the project supervisor towards the \DegreeName\ degree.
+
+Certification and approval are subject to review and signature by the supervisor and the department.
+\vspace{2.5cm}\par\noindent
+\facultyblock{\SupervisorName}{(Project Supervisor)}{\SupervisorDesignation}\hfill\facultyblock{\HodName}{(Head of the Department)}{\HodDesignation}
+\vspace{2cm}\par\noindent Date: \rule{5cm}{0.4pt}\\Place: NIT Agartala
+\prefacesection{Acknowledgement}
+I express my gratitude to my project supervisor, \SupervisorName, \SupervisorDesignation, for guidance, feedback, and encouragement during the development of KAVACH. I thank \HodName, \HodDesignation\ and Head of the Department, and the faculty of the Department of Computer Science and Engineering, National Institute of Technology Agartala, for their academic support.
+
+I acknowledge the developers and maintainers of the open-source technologies used in this project, including Spring Boot, Spring Security, React, PostgreSQL, and supporting libraries. Their work provided the foundation for exploring authentication monitoring, rule-based anomaly detection, and tool-assisted security analysis. I also thank my family and friends for their patience and support.
+\vspace{1cm}\par\hfill\CandidateName\ (\RollNumber)
+\clearpage\begingroup\setlength{\parskip}{0pt}\setstretch{1.05}\listoffigures\endgroup\clearpage\begingroup\setlength{\parskip}{0pt}\setstretch{1.05}\listoftables\endgroup
+\prefacesection{Abstract}
+KAVACH is a web application for monitoring authentication activity, detecting rule-based login anomalies, and supporting security investigation through an AI tool interface. The implementation separates a React frontend from a Java 21 Spring Boot backend and uses PostgreSQL through Spring Data JPA. Authentication uses BCrypt password verification and bearer JSON Web Tokens; administrative operations and selected user-specific resources are protected through role and ownership checks.
+
+The detection pipeline evaluates six conditions: failed login, unusual login time, login involving an inactive account, a previously unseen IP address, a previously unseen device string, and repeated failures within a ten-minute window. Each anomaly has a fixed severity and weight. User risk is calculated from anomaly weights recorded during the preceding 24 hours and capped at 100. Dashboard services combine login statistics, severity totals, recent critical anomalies, and a ranked user watchlist.
+
+The AI component includes structured anomaly explanations and a two-loop orchestration service. An inner loop performs bounded model/planner and tool cycles; an outer loop processes supplied follow-up requests. Thirteen registered tools expose investigative queries and selected account or telemetry operations. A deterministic fallback supports operation when live inference is unavailable. This report documents the implementation, diagrams its data flow, explains detection rules, and presents a reproducible validation plan. It distinguishes source-confirmed behavior from proposed improvements and makes no measured accuracy, throughput, or production-readiness claims.
+
+\noindent\textbf{Keywords:} authentication telemetry, anomaly detection, risk scoring, Spring Security, two-loop agent, security dashboard.
+\clearpage\begingroup\setlength{\parskip}{0pt}\setstretch{1.05}\tableofcontents\endgroup
+\clearpage\pagenumbering{arabic}\pagestyle{fancy}\raggedbottom
+\include{chapter1}\include{chapter2}\include{chapter3}\include{chapter4}\include{chapter5}\include{chapter6}
+\begin{thebibliography}{9}
+\bibitem{repo} KAVACH project source, \emph{login-analysis-backend} and \emph{login-analysis-frontend}, local snapshot reviewed 17 November 2026. Source map in Appendix A.
+\bibitem{jwt} M. Jones, J. Bradley, and N. Sakimura, \emph{JSON Web Token (JWT)}, RFC 7519, May 2015. \url{https://www.rfc-editor.org/rfc/rfc7519}.
+\bibitem{spring} Spring, \emph{Spring Security Reference: Method Security}. \url{https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html}. Accessed 17 November 2026.
+\bibitem{owasp} OWASP Foundation, \emph{Logging Cheat Sheet}. \url{https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html}. Accessed 17 November 2026.
+\bibitem{template} NIT Agartala, \emph{B.Tech 7th Semester LaTeX Template}, user-supplied archive including institutional class, logos, and chapter styling; adapted for MCA.
+\end{thebibliography}
+\appendix\include{appendix}
+\end{document}

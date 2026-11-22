@@ -1,0 +1,43 @@
+\chapter{Introduction}
+\section{Project Overview}
+Login records help investigators examine account misuse. Each record identifies an account, an outcome, a time, and network or client details. A single event provides limited context. Comparing it with account state and earlier activity can explain why it deserves attention.
+
+KAVACH brings login records, rule-based alerts, account risk, audit history, and AI-assisted investigation into one web application. Its name means a shield. The application has a Spring Boot REST backend, a React frontend, and PostgreSQL storage. The implementation described here is the supplied source snapshot \cite{repo}.
+
+ADMIN and USER are the application security roles. Administrators can inspect activity across accounts and manage users through designated endpoints. Ordinary users have selected views of their own activity. The AI investigator and operator roles describe agent behavior; they do not replace the signed-in user's permissions.
+
+\section{Problem Statement}
+Rejecting an incorrect password leaves an investigator to determine which account was targeted, whether failures repeated, and whether the client was familiar. KAVACH connects login records with alerts and recent account risk to support that investigation in a small application with inspectable logic.
+
+The project evaluates login events with explicit rules, combines the resulting alerts into a bounded account score, and lets a conversational interface retrieve relevant application data through tools. Statistical validation and deployment hardening remain further work.
+
+\section{Objectives}
+\begin{enumerate}
+\item Implement registration and authentication with encoded passwords and bearer tokens.
+\item Persist login activity and evaluate six explicit detection rules.
+\item Present anomalies, risk, trends, account status, and audit events through role-aware pages.
+\item Support structured AI explanations with a deterministic fallback.
+\item Implement bounded tool calling and continuation through supplied follow-ups.
+\item Document the architecture and the tests needed to establish correctness and security.
+\end{enumerate}
+
+\section{System Block Diagram}
+Figure~\ref{fig:architecture} shows the browser, API, service layer, and external dependencies. Browser requests go through the backend, which controls access to PostgreSQL and the model provider. Application services save records, evaluate rules, and coordinate AI requests.
+\begin{figure}[htbp]\centering\begin{tikzpicture}[node distance=0.8cm]
+\node[box,text width=9cm] (ui) {React frontend\\Dashboard, anomalies, risk, logs, directory, audit, AI};
+\node[box,below=of ui,text width=9cm] (api) {Spring Boot REST API\\JWT filter, validation, role and ownership checks};
+\node[box,below=of api,text width=9cm] (svc) {Application services\\Telemetry, detection, risk, analytics, AI orchestration};
+\node[box,draw=KTeal,fill=KTeal!9,below left=1cm and -1cm of svc,text width=4cm] (db) {Spring Data JPA\\PostgreSQL};
+\node[box,draw=KPurple,fill=KPurple!9,below right=1cm and -1cm of svc,text width=4cm] (ai) {Grok / xAI integration\\Deterministic fallback};
+\draw[flow](ui)--(api);\draw[flow](api)--(svc);\draw[flow](svc)--(db);\draw[flow](svc)--(ai);
+\end{tikzpicture}\caption{KAVACH implementation architecture.}\label{fig:architecture}\end{figure}
+
+\section{Scope and Boundaries}
+KAVACH is a prototype for monitoring activity within the application. Detection uses fixed rules without training a machine-learning model. The IP rule compares stored addresses and performs no external reputation lookup. The device rule compares supplied strings, including user-agent information captured during authentication; those strings do not verify a physical device.
+
+The inactive-user rule reads the account active flag and does not measure how long an account has been dormant. Quarantine sets that flag to false, affecting later authentication and JWT checks. It provides no operating-system isolation or firewall enforcement.
+
+The project materials contain no production traffic dataset, benchmark run, or labelled evaluation corpus. Detection accuracy and performance therefore remain unmeasured. Chapter 5 describes the interfaces and includes selected application screenshots supplied by the candidate.
+
+\section{Organization of the Report}
+Chapters 2--4 describe requirements, system design, and implementation. Chapter 5 presents the interfaces and validation plan. Chapter 6 discusses limitations and future work. The appendices contain the repository structure, database dictionary, API reference, publication statement, and biographical sketch.

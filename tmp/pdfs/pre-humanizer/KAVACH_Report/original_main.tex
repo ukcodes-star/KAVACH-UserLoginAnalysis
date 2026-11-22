@@ -1,0 +1,340 @@
+\documentclass[USenglish,a4paper,12pt]{nitathesis}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{xcolor}
+\makeatletter
+\def\@xfloat #1[#2]{%
+  \@nodocument
+  \def \@captype {#1}%
+   \def \@fps {#2}%
+   \@onelevel@sanitize \@fps
+   \def \reserved@b {!}%
+   \ifx \reserved@b \@fps
+     \@fpsadddefault
+   \else
+     \ifx \@fps \@empty
+       \@fpsadddefault
+     \fi
+   \fi
+   \ifhmode
+     \@bsphack
+     \@floatpenalty -\@Mii
+   \else
+     \@floatpenalty-\@Miii
+   \fi
+  \ifinner
+     \@parmoderr\@floatpenalty\z@
+  \else
+    \@next\@currbox\@freelist
+      {%
+       \@tempcnta \sixt@@n
+       \expandafter \@tfor \expandafter \reserved@a
+         \expandafter :\expandafter =\@fps
+         \do
+          {%
+           \if \reserved@a h%
+             \ifodd \@tempcnta
+             \else
+               \advance \@tempcnta \@ne
+             \fi
+           \fi
+           \if \reserved@a t%
+             \@setfpsbit \tw@
+           \fi
+           \if \reserved@a b%
+             \@setfpsbit 4%
+           \fi
+           \if \reserved@a p%
+             \@setfpsbit 8%
+           \fi
+           \if \reserved@a !%
+             \ifnum \@tempcnta>15
+               \advance\@tempcnta -\sixt@@n\relax
+             \fi
+           \fi
+           }%
+       \@tempcntb \csname ftype@\@captype \endcsname
+       \multiply \@tempcntb \@xxxii
+       \advance \@tempcnta \@tempcntb
+       \global \count\@currbox \@tempcnta
+       }%
+    \@fltovf
+  \fi
+  \global \setbox\@currbox
+    \color@vbox
+      \normalcolor
+      \vbox \bgroup
+        \hsize\columnwidth
+        \@parboxrestore
+        \@floatboxreset
+}
+\makeatother
+
+\usepackage{graphicx,times,epsfig,amsmath}
+\usepackage[square,numbers,comma]{natbib}
+\usepackage{amssymb,amsfonts,textcomp}
+\usepackage[utf8]{inputenc}
+% \usepackage[Sonny]{myfancy}
+\usepackage[Sonny]{fncychap}
+\usepackage{latexsym}
+\usepackage{float}
+\usepackage{xspace}
+\usepackage{algorithmwh}
+\usepackage{comment}
+\usepackage{watermark}
+\usepackage{graphicx}
+\usepackage{pifont}
+\usepackage{fancyhdr}
+\usepackage{blindtext}
+\usepackage{import}
+\usepackage{lineno}
+\usepackage{rotating}
+\usepackage{ragged2e}
+
+% \usepackage{caption}
+\usepackage{subcaption}
+\usepackage{comment}
+\usepackage{nomencl}
+\numberwithin{figure}{chapter}
+\usepackage{placeins}
+\usepackage{relsize}
+\usepackage{booktabs}
+% \usepackage[nottoc]{tocbibind}
+\usepackage{multicol}
+\usepackage{multirow}
+% \usepackage{rotating}
+\usepackage{array}
+\usepackage{supertabular}
+\usepackage{hhline}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{verbatim}
+\usepackage{chngcntr}
+%\usepackage{textcomp}
+\usepackage[flushleft]{threeparttable}
+\usepackage{tabulary}
+% \usepackage{subfig}
+% \usepackage{subfigure}
+% \usepackage[subfigure]{tocloft}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    % filecolor=magenta,      
+    % urlcolor=cyan,
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%--reducing the space before the Chapter Headings.
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{\vspace*{0\p@}}{}{}
+\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{\vspace*{0\p@}}{}{}
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%to reduce the spacing 
+\usepackage[compact]{titlesec}
+\titlespacing{\section}{0pt}{*0}{*0}
+ \titlespacing{\subsection}{0pt}{*0}{*0}
+\titlespacing{\subsubsection}{0pt}{*0}{*0}
+
+%to reduce the space in itemize/enumerate 
+\usepackage{mdwlist}
+
+
+%Adjusting the space between references in the bibliography.
+
+\newlength{\bibitemsep}\setlength{\bibitemsep}{.2\baselineskip plus .05\baselineskip minus .05\baselineskip}
+\newlength{\bibparskip}\setlength{\bibparskip}{0pt}
+\let\oldthebibliography\thebibliography
+\renewcommand\thebibliography[1]{%
+  \oldthebibliography{#1}%
+  \setlength{\parskip}{\bibitemsep}%
+  \setlength{\itemsep}{\bibparskip}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\counterwithout{footnote}{chapter}
+% \usepackage[colorinlistoftodos]{todonotes}
+% \usepackage{todonotes}
+% \usepackage[draft]{todonotes} 
+
+%\usepackage[square, sort, numbers, authoryear]{natbib}
+% \small
+\bibliographystyle{abbrv}
+
+% \def\small{\@setsize\small{10pt}\ixpt\@ixpt}
+%Table commands
+\newcommand\tabletop{\hline\noalign{\smallskip}}
+\newcommand\tablemid{\noalign{\smallskip}\hline\noalign{\smallskip}}
+\newcommand\tablebot{\noalign{\smallskip}\hline}
+\newcommand\tablecline[2]{\noalign{\smallskip}\cline{#1-#2}\noalign{\smallskip}}
+
+\setlength {\marginparwidth }{2cm} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lhead{}
+\chead{}
+%\rhead{CSED, NIT Agartala}
+\lfoot{ }
+\cfoot{\thepage}
+\rfoot{}
+
+%\setlength{\headrulewidth}{0.4pt}
+%\setlength{\footrulewidth}{0.4pt}
+\setlength{\headheight}{14.5pt}
+
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+
+
+%\usepackage{algorithms}% \Add{} and \Del{} Corrections and \Mark{}
+\begin{document}
+
+% Using the watermark package which is in StyleFiles/
+% and to remove DRAFT COPY ONLY appearing on the top of all pages comment out below line
+%\watermark{SAMPLE COPY ONLY}
+
+\beforepreface
+\prefacesection{Acknowledgement}
+%%%%%%%%%%%%%%%
+%% Here,  write the content of Acknowledgement
+%% Blind Text are here for the sample template 
+\blindtext
+
+
+%%%%%%%%%%%%%%
+\vspace*{0.5cm} 
+\hspace*{1cm}\textbf{\large - Author-1}
+\hspace*{5cm}\textbf{\large - Author-2}
+
+\vspace*{0.5cm} 
+\hspace*{1cm}\textbf{\large - Author-3}
+\hspace*{6cm}\textbf{\large - Author-4}
+ 
+%\vspace*{0.5cm} \hspace*{1cm}\textbf{\large - Candidate's Name}
+
+\pagestyle{fancy}
+\fancyhead[RO,RE]{\nouppercase\rightmark}
+\fancyfoot[C]{\thepage}
+\listoffigures
+\listoftables
+\newpage
+\prefacesection{Abstract}
+%%%%%%%%%%%%%%%% Enter the content of Abstract here 
+\blindtext
+
+
+%\afterpreface
+%\pagenumbering{roman}                     
+%\setcounter{page}{12}
+\renewcommand{\headrulewidth}{0.5pt}
+\pagestyle{fancy}
+\fancyhead[RO,RE]{\nouppercase\rightmark}
+\fancyfoot[C]{\thepage}
+%\fancyhead[RO,RE]{\thepage}
+\tableofcontents
+\newpage
+
+
+
+% This 13 is for total page before chapters starts
+%\pagenumbering{roman}
+%\setcounter{page}{11}
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}   
+
+\fancyhf{}
+\fancyhead[RO]{\slshape\nouppercase\rightmark{}}
+\fancyhead[RE]{\slshape\nouppercase\leftmark{}}
+\cfoot{\thepage}
+\pagestyle{fancy}
+%\fancyhead[ro]{\slshape\nouppercase\thepage}
+%\fancyhead[re]{\slshape\nouppercase\thepage}
+%\fancyhead[ro,re]{\slshape\nouppercase\thepage}
+
+\flushbottom
+\include{chapter1}
+\flushbottom
+
+\flushbottom
+\include{chapter2}
+\flushbottom
+
+
+\small
+\bibliography{bib/mybib}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\chapter{Appendix Chapter Title}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Publications related to report work}
+\begin{enumerate}	
+ \item  Paper-1 details 
+ \item Paper-2 details
+\end{enumerate}
+% \renewcommand{\thechapter}{\Roman{chapter}}
+% \pagestyle{fancy}
+% \fancyhead[RO,RE]{Biographical Sketch}
+\chapter{Biographical sketch}
+\begin{center}
+{\textbf{\large Author-1}}\end{center} %\hrule
+\begin{center}
+Address PIN-600014, \\ E-Mail: author1@gmail.com,  Contact. No. +91-1111111111 \\
+ \end{center}
+ \begin{itemize}
+  \setlength\itemsep{0pt}
+\item Pursuing B.Tech. in Computer Sc. \& Engg. branch from N.I.T,Agartala with CGPA of 9.18.
+\item High School from D.A.V Boys Sr. Sec. School, Gopalapuram. Chennai under (C.B.S.E), Tamil Nadu with 96.4 \% in 2016.
+\item Intermediate from D.A.V Boys Sr. Sec. School, Gopalapuram. Chennai under (C.B.S.E), Tamil Nadu with CGPA 10.0 in 2014.
+\end{itemize}
+\newpage
+\begin{center}
+{\textbf{\large Author-2}}\end{center} %\hrule
+\begin{center}
+E-175, Bank Colony, Murlipura Scheme, Jaipur PIN-302039,\\E-Mail: author2@gmail.com,  Contact. No. +91-9876543210 \\
+ \end{center}
+ \begin{itemize}
+ \setlength\itemsep{0pt}
+\item Pursuing B.Tech. in Computer Sc. \& Engg. branch from N.I.T, Agartala with CGPA of 9.09.
+\item Graduated High School from Maheshwari Public School, Jawahar Nagar, Jaipur under C.B.S.E, New Delhi with 93.2\% in 2015.
+\item Intermediate from Maheshwari Public School, Jawahar Nagar, Jaipur under C.B.S.E, New Delhi with CGPA 9.4 in 2013.
+\end{itemize}
+
+\begin{center}
+{\textbf{\large Author-3}}\end{center} %\hrule
+\begin{center}
+Parakkuzhi House, Kodiyathur, Mokkam, Kozhikode  PIN-673602 \\E-Mail: author3@gmail.com,  Contact. No. +91-1919191919 \\
+ \end{center}
+ \begin{itemize}
+ \setlength\itemsep{0pt}
+\item Pursuing B.Tech. in Computer Sc. \& Engg. branch from N.I.T,Agartala with CGPA of 7.55.
+\item High School from DPS-Modern Indian School, Doha under (C.B.S.E), Qatar with 80.4\% in 2016.
+\item Intermediate from DPS-Modern Indian School, Doha under (C.B.S.E), Qatar with CGPA 9.4 in 2014.
+\end{itemize}
+
+\begin{center}
+{\textbf{\large Author-4}}\end{center} %\hrule
+\begin{center}
+T/III/HIG/H/101, Housing Board Qtr Complex, 79 Tilla, Agartala, West Tripura, PIN:799006,  E-Mail: author-4@gmail.com,  Contact. No. +91-2020202020 \\
+ \end{center}
+ \begin{itemize}
+ \setlength\itemsep{0pt}
+\item Pursuing B.Tech. in Computer Sc. \& Engg. branch from N.I.T,Agartala with CPI of 7.51.
+\item Graduated High School from Don Bosco School,Agartala under (C.B.S.E), Tripura with 91.8\% in 2016.
+\item Intermediate from Don Bosco School, Agartala under (C.B.S.E), Tripura with CGPA 9.2 in 2014.
+\end{itemize}
+
+\end{document}

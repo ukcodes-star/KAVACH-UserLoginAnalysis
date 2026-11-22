@@ -1,0 +1,43 @@
+\chapter{Introduction}
+\section{Project Overview}
+Authentication records are useful evidence for investigating account misuse. A record can show whether an attempt succeeded, which account was involved, when the attempt occurred, and the associated network and client information. Individually, these events can be difficult to interpret. Grouping them with account state and recent history provides a more useful basis for investigation.
+
+KAVACH combines login telemetry, deterministic anomaly detection, risk summaries, audit records, and an AI-assisted investigation interface in one web application. Its name refers to a shield. The project is implemented as a Spring Boot REST backend and a React single-page frontend. PostgreSQL stores the application entities. Implementation descriptions in this report refer to the supplied source snapshot \cite{repo}.
+
+The application supports ADMIN and USER roles. Administrators can inspect organization-wide information and manage accounts through designated endpoints. Ordinary users can access selected views of their own activity. AI agent roles describe investigative and operational behavior; these are distinct from the authenticated user's security role.
+
+\section{Problem Statement}
+A basic login implementation can reject incorrect credentials without providing enough context for later investigation. A log viewer may display records without explaining their relationship to account risk. KAVACH addresses the problem of connecting authentication events to understandable alerts, recent account risk, and an investigation workflow within a small, inspectable application.
+
+The project asks how a login event can be evaluated using explicit rules, how alerts can be summarized into a bounded user score, and how a conversational tool interface can retrieve relevant application information. The current work implements these capabilities while leaving statistical validation and deployment hardening as further work.
+
+\section{Objectives}
+\begin{enumerate}
+\item Implement registration and authentication with encoded passwords and bearer tokens.
+\item Persist login activity and evaluate six explicit detection rules.
+\item Present anomalies, risk, trends, account status, and audit events through role-aware pages.
+\item Support structured AI explanations with a deterministic fallback.
+\item Implement bounded tool calling and continuation through supplied follow-ups.
+\item Document the architecture and the tests needed to establish correctness and security.
+\end{enumerate}
+
+\section{System Block Diagram}
+Figure~\ref{fig:architecture} summarizes implementation boundaries. The browser communicates with the backend rather than directly with PostgreSQL or the model provider. Services coordinate persistence, rule evaluation, and AI interactions.
+\begin{figure}[htbp]\centering\begin{tikzpicture}[node distance=0.8cm]
+\node[box,text width=9cm] (ui) {React frontend\\Dashboard, anomalies, risk, logs, directory, audit, AI};
+\node[box,below=of ui,text width=9cm] (api) {Spring Boot REST API\\JWT filter, validation, role and ownership checks};
+\node[box,below=of api,text width=9cm] (svc) {Application services\\Telemetry, detection, risk, analytics, AI orchestration};
+\node[box,draw=KTeal,fill=KTeal!9,below left=1cm and -1cm of svc,text width=4cm] (db) {Spring Data JPA\\PostgreSQL};
+\node[box,draw=KPurple,fill=KPurple!9,below right=1cm and -1cm of svc,text width=4cm] (ai) {Grok / xAI integration\\Deterministic fallback};
+\draw[flow](ui)--(api);\draw[flow](api)--(svc);\draw[flow](svc)--(db);\draw[flow](svc)--(ai);
+\end{tikzpicture}\caption{KAVACH implementation architecture.}\label{fig:architecture}\end{figure}
+
+\section{Scope and Boundaries}
+The project is an application-level monitoring prototype. Its rule engine does not train a machine-learning model. IP addresses are compared with stored history; no external reputation lookup is implemented. The device rule compares supplied strings, including user-agent information on the authentication path; it is not a cryptographically verified device identity.
+
+An inactive-user alert concerns the account active flag, not elapsed account dormancy. Quarantine refers to setting an account inactive, affecting later authentication and JWT checks. It does not imply operating-system isolation or firewall enforcement.
+
+No production traffic dataset, benchmark run, or labelled evaluation corpus was supplied. Quantitative performance and detection-accuracy claims are excluded. Interface workflows in Chapter 5 are source-derived descriptions rather than captured runtime screenshots.
+
+\section{Organization of the Report}
+Chapter 2 presents requirements and dependencies. Chapter 3 explains data flow, persistence, and access boundaries. Chapter 4 details authentication, detection, risk, and AI operation. Chapter 5 describes interfaces and validation scenarios. Chapter 6 concludes with limitations and future work. Appendices map findings to source and explain report compilation.

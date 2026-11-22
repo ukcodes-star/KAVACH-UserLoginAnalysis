@@ -1,0 +1,1472 @@
+
+--- PAGE 1 ---
+KA V ACH: USER LOGIN ANALYSIS USING
+LLM
+Master of Computer Applications Project Report
+Umakant Yadav (24MCA026)
+COMPUTER SCIENCE & ENGINEERING DEPARTMENT
+NA TIONAL INSTITUTE OF TECHNOLOGY, AGARTALA
+INDIA–799046
+November, 2026
+
+--- PAGE 2 ---
+KA V ACH: USER LOGIN ANALYSIS USING
+LLM
+Report submitted to
+National Institute of Technology, Agartala
+for the award of the degree of
+Master of Computer Applications
+by
+Umakant Yadav (24MCA026)
+Under the Guidance of
+Dr. Ranjita Das
+Assistant Professor
+COMPUTER SCIENCE & ENGINEERING DEPARTMENT
+NA TIONAL INSTITUTE OF TECHNOLOGY AGARTALA
+November, 2026
+
+--- PAGE 3 ---
+Dedicated To
+My project supervisor, Dr. Ranjita Das, Assistant Professor, CSED, NIT Agartala,
+for his continuous guidance, valuable insights, encouragement, and unwavering
+trust throughout this journey. I also extend my gratitude to all faculty members of
+the department whose teachings and support have shaped my professional growth
+and helped me reach this milestone. This dedication is also extended to everyone
+who contributed in any way to the development of this project and supported me
+along the way.
+iii
+
+--- PAGE 4 ---
+REPORT APPROV AL FOR MCA
+This report entitled “KA V ACH: User Login Analysis Using LLM”, submitted by Umakant Y a-
+dav (24MCA026), is presented in partial fulﬁlment of the requirements for the award of the
+Master of Computer Applications degree at the National Institute of Technology, Agartala.
+Dr. Ranjita Das
+(Project Supervisor)
+Assistant Professor
+Computer Science and Engineering
+NIT Agartala
+Dr. Ashim Saha
+(Head of the Department)
+Associate Professor
+Computer Science and Engineering
+NIT Agartala
+Date:
+Place: NIT Agartala
+iv
+
+--- PAGE 5 ---
+DECLARATION
+I declare that the work presented in this report titled “KA V ACH: User Login Analysis Using
+LLM”, submitted to the Department of Computer Science and Engineering, National Institute of
+Technology, Agartala, for the award of the Master of Computer Applications degree, represents
+my work and that sources used in preparing the report have been acknowledged. I understand
+the requirements of academic honesty and integrity and the need to avoid fabrication of results,
+data, or references.
+This declaration is to be reviewed and signed by the candidate before submission.
+Umakant Y adav
+24MCA026
+November, 2026
+NIT Agartala
+v
+
+--- PAGE 6 ---
+CERTIFICA TE
+The report titled “KA V ACH: User Login Analysis Using LLM”, submitted by Umakant Y adav
+(24MCA026), is presented for certiﬁcation of the project work carried out under the guidance
+of the project supervisor towards the Master of Computer Applications degree.
+Certiﬁcation and approval are subject to review and signature by the supervisor and the
+department.
+Dr. Ranjita Das
+(Project Supervisor)
+Assistant Professor
+Computer Science and Engineering
+NIT Agartala
+Dr. Ashim Saha
+(Head of the Department)
+Associate Professor
+Computer Science and Engineering
+NIT Agartala
+Date:
+Place: NIT Agartala
+vi
+
+--- PAGE 7 ---
+Acknowledgement
+I express my gratitude to my project supervisor, Dr. Ranjita Das, Assistant Professor, for guid-
+ance, feedback, and encouragement during the development of KA V ACH. I thank Dr. Ashim
+Saha, Associate Professor and Head of the Department, and the faculty of the Department of
+Computer Science and Engineering, National Institute of Technology Agartala, for their aca-
+demic support.
+I acknowledge the developers and maintainers of the open-source technologies used in
+this project, including Spring Boot, Spring Security, React, PostgreSQL, and supporting li-
+braries. Their work provided the foundation for exploring authentication monitoring, rule-based
+anomaly detection, and tool-assisted security analysis. I also thank my family and friends for
+their patience and support.
+Umakant Y adav (24MCA026)
+vii
+
+--- PAGE 8 ---
+List of Figures
+1.1 KA V ACH implementation architecture. . . . . . . . . . . . . . . . . . . . . . 3
+3.1 C4 system context: actors, KA V ACH, and optional model provider. . . . . . . . 9
+3.2 C4 containers: browser application, backend application, database, and provider. 10
+3.3 C4 backend components and external dependencies. . . . . . . . . . . . . . . . 11
+3.4 UML component architecture with execution boundaries and required interfaces. 12
+3.5 UML login sequence: credentials, audit, telemetry, rules, and response. . . . . 13
+3.6 UML agent sequence: request-local queues, bounded planning, tools, and trace. 14
+3.7 Detailed entity model with keys, ﬁelds, optional links, and multiplicities. . . . . 15
+3.8 UML use cases: personal investigation, administration, and optional AI support. 16
+3.9 DFD level 0: balanced context inputs and outputs. . . . . . . . . . . . . . . . . 17
+3.10 DFD level 1: six logical processes, ﬁve data-store groups, and external ﬂows. . 18
+3.11 DFD level 2 of process 3.0: six rules, historical reads, and anomaly persistence. 19
+3.12 DFD level 2 of process 5.0: advisory analysis, model/planner, tools, and outputs. 20
+4.1 Two-loop execution structure. . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+5.1 Source-derived navigation; backend authorization still applies. . . . . . . . . . 29
+viii
+
+--- PAGE 9 ---
+List of T ables
+1 Declared software stack. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+2 Quality requirements and available evidence. . . . . . . . . . . . . . . . . . . 7
+3 Principal access boundaries. . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+4 Detection conditions and ﬁxed weights. . . . . . . . . . . . . . . . . . . . . . 24
+5 Thirteen registered tools. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+6 Functional validation plan; execution pending. . . . . . . . . . . . . . . . . . . 31
+7 Source modules supporting implementation descriptions. . . . . . . . . . . . . 38
+ix
+
+--- PAGE 10 ---
+Abstract
+KA V ACH is a web application for monitoring authentication activity, detecting rule-based lo-
+gin anomalies, and supporting security investigation through an AI tool interface. The im-
+plementation separates a React frontend from a Java 21 Spring Boot backend and uses Post-
+greSQL through Spring Data JPA. Authentication uses BCrypt password veriﬁcation and bearer
+JSON Web Tokens; administrative operations and selected user-speciﬁc resources are protected
+through role and ownership checks.
+The detection pipeline evaluates six conditions: failed login, unusual login time, login in-
+volving an inactive account, a previously unseen IP address, a previously unseen device string,
+and repeated failures within a ten-minute window. Each anomaly has a ﬁxed severity and
+weight. User risk is calculated from anomaly weights recorded during the preceding 24 hours
+and capped at 100. Dashboard services combine login statistics, severity totals, recent critical
+anomalies, and a ranked user watchlist.
+The AI component includes structured anomaly explanations and a two-loop orchestration
+service. An inner loop performs bounded model/planner and tool cycles; an outer loop pro-
+cesses supplied follow-up requests. Thirteen registered tools expose investigative queries and
+selected account or telemetry operations. A deterministic fallback supports operation when live
+inference is unavailable. This report documents the implementation, diagrams its data ﬂow,
+explains detection rules, and presents a reproducible validation plan. It distinguishes source-
+conﬁrmed behavior from proposed improvements and makes no measured accuracy, through-
+put, or production-readiness claims.
+Keywords: authentication telemetry, anomaly detection, risk scoring, Spring Security, two-
+loop agent, security dashboard.
+x
+
+--- PAGE 11 ---
+Contents
+Acknowledgement vii
+Abstract x
+1 Introduction 1
+1.1 Project Overview . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2 Problem Statement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.3 Objectives . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.4 System Block Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.5 Scope and Boundaries . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+1.6 Organization of the Report . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2 Requirement Analysis 4
+2.1 Software Requirements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.2 Functional Requirements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.2.1 Authentication and Accounts . . . . . . . . . . . . . . . . . . . . . . . 4
+2.2.2 Telemetry and Detection . . . . . . . . . . . . . . . . . . . . . . . . . 5
+2.2.3 Risk and Analytics . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+2.2.4 AI and Tool Operations . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+2.3 Non-Functional Requirements . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+2.4 Execution Environment and Assumptions . . . . . . . . . . . . . . . . . . . . 6
+3 Design Analysis 8
+3.1 Layered Design . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+3.2 C4 Level 1: System Context . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+3.3 C4 Level 2: Containers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+3.4 C4 Level 3: Backend Components . . . . . . . . . . . . . . . . . . . . . . . . 11
+3.5 UML Component Architecture . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+3.6 UML Sequence: Authentication and Detection . . . . . . . . . . . . . . . . . . 13
+3.7 UML Sequence: Two-Loop Investigation . . . . . . . . . . . . . . . . . . . . 14
+3.8 Entity-Relationship Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+xi
+
+--- PAGE 12 ---
+3.9 UML Use-Case Diagram . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+3.10 DFD Level 0: Context . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+3.11 DFD Level 1: Processes and Stores . . . . . . . . . . . . . . . . . . . . . . . . 18
+3.12 DFD Level 2: Anomaly Detection . . . . . . . . . . . . . . . . . . . . . . . . 19
+3.13 DFD Level 2: AI Investigation . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+3.14 Database Constraints and Time Semantics . . . . . . . . . . . . . . . . . . . . 21
+3.15 Diagram Interpretation and Traceability . . . . . . . . . . . . . . . . . . . . . 21
+3.16 Access-Control Design . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+3.17 API and Error Handling . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+4 Functioning of the System 23
+4.1 Registration and Authentication . . . . . . . . . . . . . . . . . . . . . . . . . 23
+4.2 Telemetry Recording . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+4.3 Detection Engine . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+4.3.1 Historical Baselines . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+4.3.2 Time Windows and Duplicates . . . . . . . . . . . . . . . . . . . . . . 25
+4.4 Risk Calculation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+4.5 Dashboard Composition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+4.6 Two-Loop AI Orchestration . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+4.7 Security Tools Registry . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+4.8 Explanations, Fallback, and Audit . . . . . . . . . . . . . . . . . . . . . . . . 28
+5 Interfaces and Validation 29
+5.1 Documentation Method . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+5.2 Authentication and Navigation . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+5.3 Dashboard and Anomalies . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+5.4 Risk and Login Logs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+5.5 Directory, Audit, and Console . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+5.6 AI Workspace . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+5.7 V alidation Status . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+5.8 Security and Boundary Tests . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+5.9 Empirical Evaluation Plan . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+6 Conclusion and Future Work 34
+6.1 Conclusion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+6.2 Current Limitations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+6.3 Future Direction of Work . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+6.3.1 Centralized Tool Policy . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+6.3.2 Detection and Data Quality . . . . . . . . . . . . . . . . . . . . . . . . 35
+6.3.3 Audit Integrity and Reliability . . . . . . . . . . . . . . . . . . . . . . 35
+6.3.4 Agent Sessions and Interaction . . . . . . . . . . . . . . . . . . . . . . 35
+6.3.5 Scale and Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+xii
+
+--- PAGE 13 ---
+6.4 Closing Perspective . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+References 37
+A Source Evidence Map 38
+A.1 Review Basis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+A.2 Evidence Classiﬁcation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+B Build and Completion Notes 40
+B.1 Source Layout . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+B.2 Compilation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+B.3 Completion Before Submission . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+xiii
+
+--- PAGE 14 ---
+CHAPTER 1
+Introduction
+1.1 Project Overview
+Authentication records are useful evidence for investigating account misuse. A record can show
+whether an attempt succeeded, which account was involved, when the attempt occurred, and
+the associated network and client information. Individually, these events can be difﬁcult to
+interpret. Grouping them with account state and recent history provides a more useful basis for
+investigation.
+KA V ACH combines login telemetry, deterministic anomaly detection, risk summaries, audit
+records, and an AI-assisted investigation interface in one web application. Its name refers to a
+shield. The project is implemented as a Spring Boot REST backend and a React single-page
+frontend. PostgreSQL stores the application entities. Implementation descriptions in this report
+refer to the supplied source snapshot [ 1].
+The application supports ADMIN and USER roles. Administrators can inspect
+organization-wide information and manage accounts through designated endpoints. Or-
+dinary users can access selected views of their own activity. AI agent roles describe
+investigative and operational behavior; these are distinct from the authenticated user’s security
+role.
+1
+
+--- PAGE 15 ---
+Chapter 1. Introduction
+1.2 Problem Statement
+A basic login implementation can reject incorrect credentials without providing enough context
+for later investigation. A log viewer may display records without explaining their relationship
+to account risk. KA V ACH addresses the problem of connecting authentication events to under-
+standable alerts, recent account risk, and an investigation workﬂow within a small, inspectable
+application.
+The project asks how a login event can be evaluated using explicit rules, how alerts can
+be summarized into a bounded user score, and how a conversational tool interface can retrieve
+relevant application information. The current work implements these capabilities while leaving
+statistical validation and deployment hardening as further work.
+1.3 Objectives
+1. Implement registration and authentication with encoded passwords and bearer tokens.
+2. Persist login activity and evaluate six explicit detection rules.
+3. Present anomalies, risk, trends, account status, and audit events through role-aware pages.
+4. Support structured AI explanations with a deterministic fallback.
+5. Implement bounded tool calling and continuation through supplied follow-ups.
+6. Document the architecture and the tests needed to establish correctness and security.
+1.4 System Block Diagram
+Figure 1.1 summarizes implementation boundaries. The browser communicates with the back-
+end rather than directly with PostgreSQL or the model provider. Services coordinate persis-
+tence, rule evaluation, and AI interactions.
+2
+
+--- PAGE 16 ---
+Chapter 1. Introduction
+React frontend
+Dashboard, anomalies, risk, logs, directory, audit, AI
+Spring Boot REST API
+JWT ﬁlter, validation, role and ownership checks
+Application services
+Telemetry, detection, risk, analytics, AI orchestration
+Spring Data JPA
+PostgreSQL
+Grok / xAI integration
+Deterministic fallback
+Figure 1.1: KA V ACH implementation architecture.
+1.5 Scope and Boundaries
+The project is an application-level monitoring prototype. Its rule engine does not train a
+machine-learning model. IP addresses are compared with stored history; no external reputation
+lookup is implemented. The device rule compares supplied strings, including user-agent
+information on the authentication path; it is not a cryptographically veriﬁed device identity.
+An inactive-user alert concerns the account active ﬂag, not elapsed account dormancy. Quar-
+antine refers to setting an account inactive, affecting later authentication and JWT checks. It
+does not imply operating-system isolation or ﬁrewall enforcement.
+No production trafﬁc dataset, benchmark run, or labelled evaluation corpus was supplied.
+Quantitative performance and detection-accuracy claims are excluded. Interface workﬂows in
+Chapter 5 are source-derived descriptions rather than captured runtime screenshots.
+1.6 Organization of the Report
+Chapter 2 presents requirements and dependencies. Chapter 3 explains data ﬂow, persistence,
+and access boundaries. Chapter 4 details authentication, detection, risk, and AI operation.
+Chapter 5 describes interfaces and validation scenarios. Chapter 6 concludes with limitations
+and future work. Appendices map ﬁndings to source and explain report compilation.
+3
+
+--- PAGE 17 ---
+CHAPTER 2
+Requirement Analysis
+2.1 Software Requirements
+Table 1 lists declarations in the project manifests. V ersions describe this repository rather than
+recommendations about current releases. Installation and execution require separate validation
+in the target environment.
+The backend provides Maven wrapper scripts. The frontend deﬁnes develop-
+ment, build, preview, and Oxlint scripts. Vite uses port 5173 and forwards /api to
+http://localhost:8080. The Axios client supports a conﬁgurable base URL and
+otherwise uses /api.
+2.2 Functional Requirements
+2.2.1 Authentication and Accounts
+Registration shall validate data, reject duplicate usernames and email addresses, encode pass-
+words, and create active ordinary-user accounts by default. Login shall check account existence,
+active state, and password validity. Successful login shall return a token and safe account de-
+tails. Failed and blocked requests shall produce appropriate errors and audit events.
+4
+
+--- PAGE 18 ---
+Chapter 2. Requirement Analysis
+Table 1: Declared software stack.
+Component Declaration or purpose
+Java V ersion 21 in Maven properties.
+Spring Boot Parent 4.1.1; web MVC, validation, JPA, and security starters.
+PostgreSQL Runtime JDBC driver and relational persistence.
+JWT JJWT modules, version 0.12.6.
+AI client OpenAI Java SDK 4.101.0 used for Grok integration.
+React React and React DOM declared as ^19.3.1.
+Vite Build dependency declared as ^8.3.6.
+Presentation Tailwind CSS ^3.4.17, Recharts, Lucide React, GSAP .
+HTTP / routing Axios and React Router DOM.
+Administrative operations shall support account inspection, creation, and active-state
+changes. Changes shall affect later authenticated requests because the JWT ﬁlter checks the
+current account record.
+2.2.2 Telemetry and Detection
+The system shall store timestamp, account, outcome, IP address, device, and location for login
+events. Authentication shall attempt to record successful and failed events for known users. The
+administrative ingestion path shall allow explicit event creation for controlled demonstrations.
+The detector shall evaluate six independent rules. One event may create several anomalies.
+Before saving an anomaly, the system shall check whether the user, rule, and login record
+already have a matching entry.
+5
+
+--- PAGE 19 ---
+Chapter 2. Requirement Analysis
+2.2.3 Risk and Analytics
+Risk shall aggregate weights of anomalies detected in the last 24 hours, cap the score at 100, and
+map it to four named levels. Organization-wide views shall include severity totals, risky-account
+totals, login outcomes, a seven-day trend, and a ranked watchlist of at most ten accounts.
+2.2.4 AI and Tool Operations
+The system shall provide anomaly explanations, user analysis, security summaries, history,
+chat, and agent-loop execution. The agent response shall include steps and tool outputs for the
+browser. Deterministic planning or advisory fallback shall support demonstrations when live
+inference is unavailable.
+Tools shall expose names, argument schemas, role assignments, and parallel-safety meta-
+data. Because some tools change accounts or create telemetry, authorization requirements must
+apply to the execution boundary as well as the visible page.
+2.3 Non-Functional Requirements
+These are requirements and implementation observations, not benchmark results. A database
+audit table does not establish tamper resistance, and bearer authentication does not prove every
+object-level access check is correct.
+2.4 Execution Environment and Assumptions
+Development requires Java 21, a Node.js environment compatible with the frontend dependen-
+cies, and PostgreSQL. Live inference requires provider conﬁguration and network access. Cre-
+dentials should be supplied through the existing conﬁguration mechanisms; none are included
+in this report.
+No measured minimum hardware speciﬁcation is available. Hardware and concurrency re-
+quirements must be established by testing rather than assigning unsupported RAM or CPU
+6
+
+--- PAGE 20 ---
+Chapter 2. Requirement Analysis
+Table 2: Quality requirements and available evidence.
+Attribute Intended requirement Evidence / validation needed
+Security Restrict protected data and actions. JWT ﬁlter and method checks exist;
+tool-path policy needs explicit tests.
+Explainability State why alerts were generated. Stored rule type, description, severity,
+and weight.
+Maintainability Separate presentation and business
+logic.
+Pages, controllers, services,
+repositories, entities, and DTOs.
+Reliability Preserve failed-login telemetry. New transaction on authentication
+recording; errors caught by caller.
+Usability Provide clear navigation and failures. Shared UI, route guards, themes,
+normalized API errors.
+Performance Bound query and AI work. Pagination and six inner iterations; load
+tests pending.
+ﬁgures. Timestamp rules use LocalDateTime and require a consistent time convention. Ad-
+ministrators must distinguish synthetic events from genuine login attempts, and AI conﬁdence
+labels must not be interpreted as calibrated attack probabilities.
+7
+
+--- PAGE 21 ---
+CHAPTER 3
+Design Analysis
+3.1 Layered Design
+Controllers receive HTTP requests, apply declared access restrictions, and pass inputs to ser-
+vices. Services implement authentication, telemetry, detection, scoring, analysis, and orchestra-
+tion. Repository interfaces express persistence operations and aggregate queries. DTOs shape
+responses so clients receive page data without directly controlling entity persistence.
+The frontend organizes features as pages and shared layout/UI components. Authentica-
+tion and theme contexts hold browser state. A common Axios client adds bearer credentials,
+normalizes failures, and emits diagnostic information. These boundaries make the workﬂows
+traceable to source modules [ 1].
+8
+
+--- PAGE 22 ---
+Chapter 3. Design Analysis
+3.2 C4 Level 1: System Context
+The context view identiﬁes the people who use KA V ACH and its optional external model de-
+pendency. It treats the frontend, backend, and database as one software system. Personal and
+administrative scopes are distinct even though both use the same browser interface.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+Account user
+[Person]
+Authenticates; reviews
+permitted personal activity
+Administrator
+[Person]
+Investigates global activity
+and manages accounts
+KA V ACH
+[Software system]
+Login telemetry, six detection rules, recent
+risk, audit records, AI-assisted investigation
+xAI / Grok model service
+[External software system]
+Optional model inference;
+no direct database access
+Credentials, personal queries
+Token, own activity, explanations
+Administrative queries, account actions
+Metrics, records, tool results
+Sanitized analysis context
+and tool schemas
+Model text / tool calls
+or provider failure
+Scope: PostgreSQL and the browser application are inside
+KA V ACH and appear in the container view. The provider is op-
+tional; deterministic fallback remains inside the backend. Actor
+permissions are enforced by server-side policy, not by the model.
+Figure 3.1: C4 system context: actors, KA V ACH, and optional model provider.
+9
+
+--- PAGE 23 ---
+Chapter 3. Design Analysis
+3.3 C4 Level 2: Containers
+The container view decomposes KA V ACH into the React application, the Spring Boot applica-
+tion, and PostgreSQL. Here a container means an independently executing application or data
+store, not a claim that Docker deployment exists. The localhost proxy reﬂects the supplied Vite
+conﬁguration.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+User / Administrator
+[Person] Uses the browser
+KA V ACH software-system boundary
+Web application [Container: React / Vite]
+Page components, React Router, authentication/theme
+contexts, Axios, charts, Markdown and execu-
+tion trace. Token stored in browser local storage.
+Backend application [Container: Java 21 / Spring Boot]
+REST controllers, JWT ﬁlter, access checks, ser-
+vices, JPA repositories; deterministic detec-
+tor; Grok client and two-loop tool orchestration.
+Database [Container: PostgreSQL]
+users, user_login_logs, anomalies, audit_logs, ai_analysis_history.
+JPA entities and repository queries provide access.
+External model service [Software system: xAI / Grok]
+Inference via provider API; backend falls back to lo-
+cal planning / advisory output when unavailable.
+Browser interaction
+JSON REST + bearer JWT
+Local Vite /api proxy to :8080
+JPA / JDBC: records and aggregates
+Provider API request / response
+Figure 3.2: C4 containers: browser application, backend application, database, and provider.
+10
+
+--- PAGE 24 ---
+Chapter 3. Design Analysis
+3.4 C4 Level 3: Backend Components
+This view expands the backend container into security, controllers, domain services, AI ser-
+vices, and repositories. Arrows express dependencies rather than a promise that every request
+follows every branch. Registry tools can bypass controller entry points, so tool execution re-
+quires its own authorization boundary.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+React client: JSON API requests + bearer JWT
+Backend container
+Security boundary
+SecurityConﬁg, JwtAuthenticationFilter, UserAuthorizationService
+Token validation, current-account
+lookup, role / selected ownership checks
+REST controllers / DTOs
+Auth, User, LoginLog, Anomaly, Risk, Se-
+curityDashboard, AuditLog, AIAnalysis
+Identity services
+AuthService
+UserService
+JwtService
+AuditLogService
+Monitoring services
+LoginLogService
+AnomalyDetectionService
+RiskService
+Analytics / dashboard
+AI services
+GrokAIService
+TwoLoopAgentService
+SecurityToolsRegistry
+GrokClient
+JPA repository layer
+UserRepository, LoginLogRepository, Anoma-
+lyRepository, AuditLogRepository, AIAnalysis-
+Repository; entity mapping and aggregate queries
+PostgreSQL
+Application data
+xAI / Grok
+External inference
+JDBC
+Provider API
+Figure 3.3: C4 backend components and external dependencies.
+11
+
+--- PAGE 25 ---
+Chapter 3. Design Analysis
+3.5 UML Component Architecture
+The UML component view emphasizes execution environments and required interfaces. Dashed
+arrows denote usage dependencies. The domain-service grouping includes identity, monitoring,
+risk, and audit responsibilities; the AI grouping contains advisory analysis, orchestration, and
+operational tools.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+«execution environment» Browser
+«component» React application
+Pages + protected routes + Axios API client
+«execution environment» Spring application / JVM
+«component» Security ﬁlter chain
+JWT validation and current-user authorities; method security enabled
+«component» REST controllers
+Provides /api/auth, /users, /login-logs, /anomalies, /risk, /ai and related APIs
+«component» Domain services
+Identity, telemetry, detection,
+risk, dashboard and audit
+«component» AI and tools
+Two-loop agent, registry, advisory
+analysis and provider client
+«component» JPA persistence adapters
+«database»
+PostgreSQL
+«external system»
+xAI / Grok
+requires JSON REST interface
+authenticated request
+invokes
+requires JDBC
+Figure 3.4: UML component architecture with execution boundaries and required interfaces.
+12
+
+--- PAGE 26 ---
+Chapter 3. Design Analysis
+3.6 UML Sequence: Authentication and Detection
+Time advances down the lifelines. Solid arrows are calls and dashed arrows are responses.
+Known accounts produce telemetry attempts for success, bad password, or inactive-account
+outcomes; unknown usernames generate an audit failure without a user-linked login event. The
+detector may persist several anomalies per event.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+Browser Auth API AuthService Telemetry+ rules PostgreSQL
+1. POST /api/auth/login
+2. login(credentials, IP , user agent)
+3. Lookup username
+4. Account / absent
+alt [known account]
+5. Active ﬂag and BCrypt password check
+Success: generate JWT; inactive / bad password: reject.
+6. Save audit event
+7. recordAndAnalyze(...)
+8. Save log; read history
+9. Persisted event + history
+10. Save triggered anomalies
+else [unknown username]
+11. Save failure audit; no user-linked telemetry
+12. Login DTO or exception
+13. Token + safe user data, or 401 / 403
+Transaction detail: known-account telemetry uses RE-
+QUIRES_NEW. Authentication catches telemetry errors. Success-
+ful authentication does not prove telemetry persistence succeeded.
+Figure 3.5: UML login sequence: credentials, audit, telemetry, rules, and response.
+13
+
+--- PAGE 27 ---
+Chapter 3. Design Analysis
+3.7 UML Sequence: Two-Loop Investigation
+The outer combined fragment represents continuation through supplied follow-ups. Its inner
+fragment limits model/planner cycles to six per invocation. Tool calls are sequential and feed
+their results into the conversation. The tool registry can reach services and repositories; live
+inference is optional.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+AI workspace AI API TwoLoopAgent Model Tool registry
+1. Prompt, role, steering, follow-ups
+2. runTwoLoopAgent(request)
+3. Initialize conversation
+and request-local queues
+loop [outer: initial task + each supplied follow-up]
+loop [inner: at most 6 iterations]
+4. Consume steering; model / local plan
+5. Text + optional tool calls
+6. Resolve name; execute(args) sequentially
+Services /
+repositories
+Read or
+change data7. Tool content / details / error
+8. Append tool feedback and trace;
+ﬁnish if no tool calls or steering remain
+9. Consume next follow-up, or ﬁnish outer loop
+10. Final text, steps, counts, mode
+11. JSON response / execution trace
+Boundaries: steering/follow-ups arrive with the request, not
+through a live update channel. Tools can mutate real application
+state. The fallback planner is not inherently a dry-run engine.
+Figure 3.6: UML agent sequence: request-local queues, bounded planning, tools, and trace.
+14
+
+--- PAGE 28 ---
+Chapter 3. Design Analysis
+3.8 Entity-Relationship Diagram
+The entity view lists mapped ﬁelds, identiﬁers, required links, and multiplicities. A user has
+zero or more login records and anomalies. Each anomaly has one required user and login event.
+AI history can reference either entity optionally. Audit username and cached identiﬁers are
+stored values rather than declared foreign keys.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+users
+PK id : Long
+username : String [unique, required]
+email : String [unique, required]
+password : String [required, hash]
+active : Boolean [required]
+role : UserRole [required]
+createdAt : LocalDateTime [required]
+user_login_logs
+PK id : Long
+FK user_id [required]
+login_time : LocalDateTime [required]
+ip_address : String [required]
+device : String [optional]
+location : String [optional]
+status : LoginStatus [required]
+anomalies
+PK id : Long
+FK user_id [required]
+FK login_log_id [required]
+anomalyType : AnomalyType
+description : String
+riskScore : Integer
+severity : Severity
+detectedAt : LocalDateTime
+ai_analysis_history
+PK id : Long
+FK user_id [optional]
+FK anomaly_id [optional]
+cachedUserId, cachedAnomalyId
+username, analysisType
+summary, riskExplanation [TEXT]
+indicatorsJson [TEXT]
+recommendationsJson [TEXT]
+conﬁdence, threatLevel, model
+isAdvisory : Boolean
+createdAt : LocalDateTime
+audit_logs
+PK id : Long
+username : String
+action : String [required]
+details : String [length 1000]
+ipAddress : String
+timestamp : LocalDateTime [required]
+1 0..*
+1
+0..*
+0..1
+0..*
+0..*
+1
+0..1
+0..*
+Key: PK = primary key; FK = foreign key;
+0..* = zero or many. Required user/login links
+enforce ownership references. Cached identi-
+ﬁers and audit username are not foreign keys.
+Figure 3.7: Detailed entity model with keys, ﬁelds, optional links, and multiplicities.
+15
+
+--- PAGE 29 ---
+Chapter 3. Design Analysis
+3.9 UML Use-Case Diagram
+The diagram separates ordinary account capabilities from administrative capabilities. Adminis-
+trator specialization inherits ordinary authenticated use cases. The model provider is a support-
+ing external actor, not a human administrator. Associations describe intended application scope
+and do not certify that every agent tool enforces equivalent restrictions.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+KA V ACH applicationAccount user Administrator
+External model
+service
+Register or log in
+View own
+logs and risk
+Inspect own
+anomalies
+Explain own
+anomaly
+Run AI workﬂow
+View global
+dashboard
+Manage accounts
+Review audit records
+Insert simu-
+lated event
+Generate global
+summary
+specializes Account user
+Admin inherits ordinary authenticated use cases. Associations show intended
+direct-API scope; USER access to AI tools must not be interpreted as per-
+mission for administrative tool actions. Live model participation is optional.
+Figure 3.8: UML use cases: personal investigation, administration, and optional AI support.
+16
+
+--- PAGE 30 ---
+Chapter 3. Design Analysis
+3.10 DFD Level 0: Context
+Level 0 contains one process and three external entities: account user, administrator, and op-
+tional model provider. Its labelled ﬂows show request and response data crossing the system
+boundary. Internal database stores are deliberately omitted at this level.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+E1 Account user
+Credentials, own-data
+queries, explana-
+tion / AI requests
+E2 Administrator
+Global queries, account
+changes, synthetic events
+0. KA V ACH
+User login analysis using LLM
+Authentication, monitoring, investigation
+E3 Model provider
+Optional external inference
+Credentials /
+personal requests
+Token / errors /
+own records / advice
+Filters / events /
+account actions
+Metrics / records /
+action results
+Analysis context /
+tool schemas
+Generated text /
+tool proposals / errors
+Context rule: only one process and external entities ap-
+pear at level 0. Database stores are internal and ﬁrst appear
+at level 1. Token validation and role/ownership policy ap-
+ply to requests as described in the access-control section.
+Figure 3.9: DFD level 0: balanced context inputs and outputs.
+17
+
+--- PAGE 31 ---
+Chapter 3. Design Analysis
+3.11 DFD Level 1: Processes and Stores
+The context process expands into identity/accounts, telemetry, detection, risk/analytics, AI in-
+vestigation, and audit review. Store identiﬁers D1–D5 name the ﬁve entity groups. Repeated
+E1/E2 actors and D2/D3 stores are aliases, not additional users or databases. Query-driven risk
+reads do not imply automatic risk execution after detection.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+E1 / E2
+User / Admin
+1.0 Identity
+and accounts
+Register / authenticate; verify
+current account; directory changes
+D1 Users
+Identity, role, active state
+E2 Admin
+Synthetic event
+2.0 Record telemetry
+Real auth outcome or explicit
+event; persist login record
+D2 Login logs
+Timestamp, user,
+status, client
+3.0 Detect anomalies
+Six rules; duplicate check;
+ﬁxed weights and severity
+D3 Anomalies
+Trigger, event, weight, time
+E1 / E2
+Permitted query
+4.0 Risk and analytics
+24-hour risk; login trend;
+severity totals and watchlist
+D2 / D3 [repeated]
+Login and anomaly reads
+E1 / E2
+AI request
+5.0 AI investigation
+Explanations; bounded
+tools; advisory history
+D4 AI history
+Dedicated analysis records
+E2 Admin
+Audit query
+6.0 Audit review
+Filter persisted secu-
+rity and account events
+D5 Audit logs
+Actor, action, details, time
+E3 Provider
+Optional live model
+Credentials / token Lookup / update
+Auth outcome
+Event Save event
+Saved event
+History
+Triggered records
+Filters / results Read aggregates
+Prompt / trace Analysis history
+Filters / results Audit records
+Authentication / account audit events
+Context / output
+Figure 3.10: DFD level 1: six logical processes, ﬁve data-store groups, and external ﬂows.
+18
+
+--- PAGE 32 ---
+Chapter 3. Design Analysis
+3.12 DFD Level 2: Anomaly Detection
+Process 3.0 is decomposed into dispatch, six independent rule evaluations, and duplicate-aware
+persistence. Solid paths carry events or triggered candidates; dashed paths carry history and
+existence-query feedback. For new IP/device, the ﬁrst event establishes a baseline. The failure-
+count predicate has no explicit event-time upper bound.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+From 2.0 Record telemetry
+Saved event + associated account
+3.1 Dispatch rule evaluation
+Evaluate all six rules independently;
+one event can yield several candidates
+3.2 Failed login
+FAILED status
+20 / LOW
+3.3 Unusual time
+Hour 00:00–04:59
+25 / LOW
+3.4 Inactive user
+active = false
+80 / CRITICAL
+3.5 New IP
+Prior events exist;
+no matching other IP
+40 / MEDIUM
+3.6 New device
+No matching other
+device (ignore case)
+30 / MEDIUM
+3.7 Brute force
+Failed; count ≥ 5
+after event time - 10 min
+70 / HIGH
+D2 Login logs [read by 3.5, 3.6, 3.7]
+User history and qualifying failed-attempt count
+3.8 Deduplicate and persist each candidate
+Check (user ID, rule type, event ID); save only if absent
+D3 Anomalies
+User/event links, type, description, weight, severity, detectedAt
+Triggered candidates
+Insert anomaly
+Existing combination
+Figure 3.11: DFD level 2 of process 3.0: six rules, historical reads, and anomaly persistence.
+19
+
+--- PAGE 33 ---
+Chapter 3. Design Analysis
+3.13 DFD Level 2: AI Investigation
+Process 5.0 separates dedicated advisory analysis from agent execution. Only the dedicated
+analysis path shown here explicitly stores structured analysis history. The agent path records an
+execution trace in its response and can invoke queries or state-changing tools. Cross-account
+and action permissions must be enforced before each tool invocation.
+Blue: application Teal: data Purple: AI Amber: decisions Gray: actors / boundaries
+E1 / E2 Authorized client
+Prompt / context / role / request-local steering and follow-ups
+5.1 Route AI request
+Dedicated explanation / user analysis / summary, or agent-loop execution
+5.2 Dedicated analysis
+Resource access check; san-
+itize context; invoke infer-
+ence or deterministic advisory
+5.3 Initialize agent
+Local conversation and queues;
+select role; outer continuation loop
+D4 AI history
+Store dedicated analysis summary, ex-
+planation, indicators, advisory metadata
+5.4 Inner model
+/ planner cycle
+Consume steering; infer next
+text / calls; up to six iterations
+E3 Model provider
+Optional inference; local
+fallback on unavailability
+5.5 Resolve and
+execute tools
+Registry lookup; sequential in-
+vocation; services and repos-
+itories; capture result/error
+5.6 Assemble response
+Advisory DTO or agent ﬁnal text
++ steps + mode + loop counts
+D1 / D2 / D3 / D5 [repeated]
+Tool reads and permit-
+ted account/event writes
+Persist analysis
+Analysis DTO
+Context / calls
+Analysis context / JSON
+Tool callsTool feedback
+Data / action results
+Completed loop
+Response
+Figure 3.12: DFD level 2 of process 5.0: advisory analysis, model/planner, tools, and outputs.
+20
+
+--- PAGE 34 ---
+Chapter 3. Design Analysis
+3.14 Database Constraints and Time Semantics
+Username and email columns are unique. Login-event indexes cover user ID, time, status, and
+IP address. Anomaly detection timestamps differ from login timestamps: risk uses detection
+time, while brute-force counting uses login time. Inserting historical events therefore requires
+careful interpretation.
+The anomaly existence check uses user ID, rule type, and login-event ID. It prevents re-
+peated sequential insertion but does not establish a database-level uniqueness guarantee under
+concurrency. Analysis history stores summaries, explanations, indicators, recommendations,
+conﬁdence, model, advisory status, and cached identiﬁers. The audit entity provides persis-
+tence, without a demonstrated append-only or cryptographic integrity mechanism.
+3.15 Diagram Interpretation and Traceability
+The C4 views describe scope and structural decomposition. UML component dependencies
+describe required interfaces, while sequence diagrams describe ordering within representative
+requests. Entity associations describe persistence links. DFD arrows describe movement of data
+rather than control ﬂow; the rule-dispatch order and iteration limits are explained in Chapter 4.
+Names and responsibilities are derived from the controllers, services, registry, and JPA en-
+tities listed in Appendix A. Logical groupings such as “monitoring services” represent several
+existing classes rather than additional deployed services. Colors classify responsibilities and do
+not imply security or trust guarantees. Proposed tool-policy hardening remains a recommenda-
+tion, not an implemented control.
+3.16 Access-Control Design
+HTTP security permits authentication routes and requires authentication elsewhere. The JWT
+ﬁlter validates tokens, resolves current accounts, rejects inactive users, and installs the current
+role. Method security is enabled. Spring documents method security as authorization on method
+invocations [3].
+21
+
+--- PAGE 35 ---
+Chapter 3. Design Analysis
+Controllers restrict selected operations to ADMIN and allow ADMIN-or-USER access to
+selected personal resources. Ownership checks compare current user IDs with requested re-
+source owners. Frontend guards guide navigation; backend policy remains authoritative.
+Table 3: Principal access boundaries.
+Capability Scope Boundary
+Registration / login Public Authentication routes.
+Global dashboard / audit Administrator Controller role checks.
+Personal logs / anomalies / risk Administrator or owner Selected controller and service
+ownership checks.
+Directory changes Administrator through direct
+API
+Administrative controller
+methods.
+Agent loop / tools ADMIN or USER endpoint Execution needs its own
+resource/action policy.
+Registry tools can access repositories and services directly. An administrative controller
+annotation does not automatically protect another call path that bypasses that controller. Cen-
+tralized authorization at tool execution is therefore required hardening; this report does not
+assume identical policy enforcement across every REST and tool route.
+3.17 API and Error Handling
+The common client sends JSON, uses a 30-second timeout, and reads the bearer token from
+local storage. Unauthorized responses outside authentication routes clear stored credentials and
+dispatch an event to update UI state. The backend provides unauthorized/forbidden responses
+and structured application errors. Some security-ﬁlter audit failures are caught so the primary
+response can still be returned.
+Agent requests may involve several model cycles and can outlast a single frontend timeout.
+Timeout, cancellation, retry, and idempotency need joint testing, especially for operations that
+change state.
+22
+
+--- PAGE 36 ---
+CHAPTER 4
+Functioning of the System
+4.1 Registration and Authentication
+Registration trims the username, normalizes email, rejects duplicates, encodes the password,
+and creates an active USER account. It records an audit event and returns safe account ﬁelds.
+Login uses BCrypt password matching, which is hashing rather than reversible encryption.
+Unknown usernames generate an audit event and an unauthorized response without user-
+linked telemetry. A known inactive account is blocked and failed telemetry is attempted. Incor-
+rect passwords for active users also produce failed telemetry. V alid credentials produce a JWT,
+success audit entry, and successful login record.
+JWT is a claims representation deﬁned in RFC 7519 [ 2]. The browser sends the token with
+later requests; the backend validates it and rechecks current account state. Browser logout clears
+local authentication information and should not be described as server-side token revocation.
+4.2 Telemetry Recording
+Authentication recording uses a REQUIRES_NEW transaction annotation, intended to preserve
+telemetry independently of a failing authentication transaction. It supplies defaults for missing
+IP , device, and location, saves the event, and invokes detection. The caller catches recording
+exceptions, so a telemetry failure can occur without replacing the main login response.
+23
+
+--- PAGE 37 ---
+Chapter 4. Functioning of the System
+Explicit event creation accepts user ID, timestamp, IP , device, location, and status. This
+supports controlled demonstrations. A historical login time inﬂuences event-time rules, while a
+newly created anomaly receives its own detection time.
+4.3 Detection Engine
+Table 4: Detection conditions and ﬁxed weights.
+Rule Trigger Weight Severity
+Failed login Status is FAILED. 20 LOW
+Unusual time Login hour is at least 0 and less than 5. 25 LOW
+Inactive user Account active ﬂag is false. 80 CRITICAL
+New IP More than one event and no other event has the same
+non-null IP .
+40 MEDIUM
+New device More than one event and no other event has the same device,
+ignoring case.
+30 MEDIUM
+Brute force Failed event with at least ﬁve failures after ten minutes
+before its timestamp.
+70 HIGH
+All six rule methods run sequentially. A failed event at an unusual time may generate both
+corresponding anomalies; the brute-force rule can add another. Weights are constants rather
+than probabilities estimated from a dataset.
+4.3.1 Historical Baselines
+The new-IP and new-device rules read user history and exclude the current event by ID when
+seeking a match. They require more than one stored event, so the ﬁrst event establishes a
+baseline without a new-IP/device alert. No lookback period is conﬁgured for these comparisons.
+Device matching ignores case, and failed events can also contribute baseline values.
+24
+
+--- PAGE 38 ---
+Chapter 4. Functioning of the System
+The inactive-account rule checks a Boolean ﬂag. It does not infer dormancy from the most
+recent successful login. IP comparison does not provide geolocation or reputation, and a device
+string is not an authenticated hardware identity.
+4.3.2 Time Windows and Duplicates
+For failed event time te, the repository counts failures satisfying tlogin > t e − 10 minutes. No
+explicit upper bound tlogin ≤ te is added. Chronological live input resembles a recent ten-
+minute count, but later stored events can affect backdated input.
+Before insertion, the detector checks user ID, anomaly type, and login-event ID. Sequential
+reanalysis should avoid another matching anomaly. An existence query alone is not a demon-
+strated concurrency guarantee; a suitable unique constraint or locking policy would be required
+to establish that under racing requests.
+4.4 Risk Calculation
+Let Au(t) contain anomalies detected for user u after t−24 hours, and let wa be a stored weight.
+The score is
+Ru(t) = min
+
+100, ∑
+a∈Au(t)
+wa
+
+ . (1)
+LOW is below 30; MEDIUM spans 30–59; HIGH spans 60–79; CRITICAL begins at 80. The
+risky-user count uses a recent sum of at least 60. The top-risk query groups anomalies by
+account, caps the score, sorts descending, and limits results to ten.
+A failed login from an unseen IP on an unseen device can contribute 20 + 40 + 30 = 90
+if each condition holds. This makes the score CRITICAL. It is an arithmetic example, not an
+observed attack result. A score of 100 is not a 100 percent probability of compromise.
+4.5 Dashboard Composition
+The dashboard combines risk summary, login analytics, watchlist, and recent critical anoma-
+lies. Some counts are lifetime totals, risk uses 24 hours, and the trend uses seven days. Those
+25
+
+--- PAGE 39 ---
+Chapter 4. Functioning of the System
+horizons should remain visible when interpreting the ﬁgures. A user can enter a detailed inves-
+tigation from a global count or watchlist account.
+4.6 Two-Loop AI Orchestration
+The agent request carries prompt, optional context, role, steering messages, and follow-ups.
+The service creates local conversation/step lists and queues copied from that request. The outer
+loop invokes an inner loop and later consumes supplied follow-ups.
+Initialize prompt, role, con-
+text, and request-local queues
+Outer loop: initial task or next supplied follow-up
+Inner loop: consume steering; call model / planner
+Execute requested tools se-
+quentially and append results
+Repeat up to six inner itera-
+tions, or ﬁnish without tools
+Process follow-up or return ﬁnal response and trace
+Figure 4.1: Two-loop execution structure.
+Before each inner iteration, at most one queued steering message enters the conversation.
+The model or planner returns text and optional tool calls. Each tool is resolved by name, exe-
+cuted, and captured as success or error output. Results enter the conversation for the next cycle.
+Without tool calls or pending steering, the inner loop can ﬁnish. Each invocation is capped at
+six iterations.
+26
+
+--- PAGE 40 ---
+Chapter 4. Functioning of the System
+The outer loop consumes a follow-up and re-enters the inner loop until none remain. The
+response includes ﬁnal text, execution steps, tool names, loop counts, mode, model, and com-
+pletion time. Agent specializations label behavior within one service and conversation; they do
+not establish separately running agents.
+The queues are request-local and populated at the start. No channel in this path accepts
+newly typed messages while execution is in progress. Current behavior supports pre-submitted
+steering/follow-ups; live steering is future work. Tools execute sequentially even though they
+advertise parallel-safety metadata.
+4.7 Security Tools Registry
+Table 5: Thirteen registered tools.
+Tool Purpose
+get_dashboard_security_metrics Combined dashboard metrics.
+list_anomalies Recent anomalies, optional severity and limit.
+get_anomaly_details Anomaly and linked login metadata.
+explain_anomaly Structured AI explanation.
+get_user_risk_profile Account’s recent risk.
+get_top_risky_users Ranked watchlist.
+query_login_telemetry Login records and outcomes.
+simulate_login_event Insert an event and invoke detection.
+get_user_directory Directory information.
+update_user_account_status Activate or deactivate an account.
+create_directory_user Provision an account.
+query_audit_trail Audit records with optional ﬁlters.
+generate_security_summary AI-assisted security summary.
+Each tool declares an argument schema, assigned role, and safety metadata. Declarations
+do not by themselves establish argument validation or caller authorization. Execution requires
+27
+
+--- PAGE 41 ---
+Chapter 4. Functioning of the System
+an explicit policy for principal, action, and resource. Operational tools differ from read-only
+explanation tools because they can change application state.
+4.8 Explanations, Fallback, and Audit
+Dedicated anomaly analysis checks resource access and requests JSON containing summary,
+explanation, indicators, implications, recommendations, and conﬁdence. Parsing/provider fail-
+ures invoke deterministic advisory output. Analysis history stores results and an advisory ﬂag.
+Action tools can update account status and save audit events. They must be assessed sepa-
+rately from an explanation that merely recommends action. OW ASP logging guidance covers
+event selection, protection, and veriﬁcation [ 4]; these provide criteria for future work. The
+existing database records are not demonstrated tamper-evident logs.
+28
+
+--- PAGE 42 ---
+CHAPTER 5
+Interfaces and Validation
+5.1 Documentation Method
+This chapter describes implemented pages and API relationships from source inspection. The
+supplied Word draft has no embedded application screenshots, and no live session was captured
+for this report. The navigation diagram is a design aid, not an application screenshot. Genuine
+captures may be added before ﬁnal submission.
+Login / registration
+Protected shell: navbar, sidebar, theme, console
+Administrative
+navigation
+Dashboard, di-
+rectory, audit
+Authenticated navigation
+Anomalies, risk, logs, AI
+Figure 5.1: Source-derived navigation; backend authorization still applies.
+29
+
+--- PAGE 43 ---
+Chapter 5. Interfaces and V alidation
+5.2 Authentication and Navigation
+Login is outside the protected layout. Authentication context saves token and safe user data in
+browser local storage. The shared client sends bearer credentials and clears authentication state
+after relevant unauthorized responses. Registration creates an ordinary user.
+Persistence survives a page refresh, but local storage can be accessed by scripts running
+within the page. Tests should cover token expiry, injected scripts, and malformed stored data.
+Frontend route guards assist navigation but cannot replace API authorization.
+5.3 Dashboard and Anomalies
+The dashboard route is administrator-only. Its combined metrics provide entry points to ac-
+counts or incidents requiring investigation. The anomalies API supports ﬁltering, pagination,
+identiﬁer lookup, and user-scoped views. Investigation should begin with stored rule type, de-
+scription, and linked event metadata before considering generated explanations.
+An anomaly alone does not prove an account was compromised. For example, a changed IP
+can reﬂect legitimate movement or network changes. The interface should support comparing
+related events and account context rather than implying that every rule match is an attack.
+5.4 Risk and Login Logs
+The risk view uses the score and its 24-hour horizon. A high score indicates accumulated rule
+weights; a low score may also reﬂect absent or expired telemetry. The logs page lists events and
+includes an administrative simulation form. The form creates a supplied telemetry record and
+invokes rules; it does not perform a real password attempt or network attack.
+Synthetic records should be identiﬁed in demonstrations so they are not mistaken for gen-
+uine authentication evidence. Testing should compare the explicit ingestion path and real au-
+thentication recording because their timestamp and input sources differ.
+30
+
+--- PAGE 44 ---
+Chapter 5. Interfaces and V alidation
+5.5 Directory, Audit, and Console
+The users page supports administrator account operations and active-state management. The
+audit page displays selected persisted security events. The Winston console component supplies
+browser diagnostics and API activity. Console output and database audit events have different
+purposes and should not be described as a complete forensic trail without coverage and integrity
+tests.
+5.6 AI Workspace
+The AI page selects investigator, containment operator, or collaborative behavior. It accepts
+prompt, context, queued steering, and follow-ups, then copies queue values into the request be-
+fore submission. Returned steps show tool invocations and outcomes alongside ﬁnal Markdown
+text and availability indicators.
+Fallback output can still rely on real application tools. Absence of live inference does not
+automatically make every registry action a dry run. V alidation must establish what the fallback
+planner selects and what permissions are enforced.
+5.7 Validation Status
+The repository contains one Spring Boot context-loading test. No rule-speciﬁc results, labelled
+dataset, or load-test output was supplied. Source inspection supports this report; the application
+was not executed during report preparation. Table 6 is a proposed plan, with expected behavior
+derived from the implementation. These are not recorded pass results.
+Table 6: Functional validation plan; execution pending.
+ID Input / action Expected behavior to verify
+T1 Register unique credentials. Active USER, encoded password, safe
+response, audit event.
+T2 Repeat username or email. Conﬂict and no duplicate account.
+T3 V alid password for active user. JWT, success telemetry, applicable
+contextual rules.
+31
+
+--- PAGE 45 ---
+Chapter 5. Interfaces and V alidation
+ID Input / action Expected behavior to verify
+T4 Incorrect password for known user. Unauthorized; failed telemetry and
+failed-login anomaly.
+T5 Unknown username. Audit failure; no user-linked login record.
+T6 Inactive account attempts login. Forbidden; failed telemetry and inactive-user
+anomaly.
+T7 Events at 04:59 and 05:00. Unusual-time alert only before 05:00.
+T8 First event, repeated values, unseen
+IP/device.
+No initial new-value alerts; later unseen
+values trigger.
+T9 Four then ﬁve failures in window. Fifth qualifying failure adds brute-force
+anomaly.
+T10 Reanalyse identical login event. No duplicate event/user/rule anomaly in
+sequential execution.
+T11 Weight totals 29, 30, 59, 60, 79, 80,
+120.
+Correct boundary tiers; score capped at 100.
+T12 Move anomaly detection time beyond
+24 hours.
+Expired anomaly excluded from risk.
+T13 Deactivate account with issued JWT. Subsequent protected request rejected.
+T14 Make live inference unavailable. Deterministic fallback with accurate status
+and outcomes.
+T15 Submit steering and two follow-ups. Inner context consumes steering; outer cycles
+consume follow-ups.
+5.8 Security and Boundary Tests
+Test a USER requesting another account’s logs, anomalies, and risk. Test directory changes
+through both direct REST and agent tools. Unauthorized data or actions should be denied.
+Tool-path tests matter because the inspected source uses differing call boundaries.
+32
+
+--- PAGE 46 ---
+Chapter 5. Interfaces and V alidation
+Exercise missing arguments, negative limits, oversized strings, invalid statuses, nonexistent
+IDs, and unknown tools. Feed malformed model JSON, provider errors, and misleading in-
+structions inside tool results. Check failure during multi-step writes and concurrent anomaly
+insertion.
+Time tests should include the exact ten-minute boundary, a backdated event with later fail-
+ures already stored, and a recently inserted historical event. These distinguish strict “after”
+predicates, absent upper bounds, and login time from detection time.
+5.9 Empirical Evaluation Plan
+After functional validation, use a labelled corpus combining representative ordinary activity
+and controlled suspicious cases. Calculate precision and recall per rule and for the combined
+alert stream. Measure persistence, detection, dashboard queries, and model requests separately.
+Record hardware, database size, versions, concurrency, provider mode, and repeated runs.
+Keep deterministic-fallback results separate from live-model results. Until measurements
+exist, the supported conclusion is that the source implements an inspectable monitoring work-
+ﬂow, with empirical effectiveness still to be established.
+33
+
+--- PAGE 47 ---
+CHAPTER 6
+Conclusion and Future Work
+6.1 Conclusion
+KA V ACH integrates authentication telemetry, six deterministic rules, recent user risk, dash-
+board summaries, audit records, and a tool-assisted AI workﬂow. Frontend pages, API con-
+trollers, services, repositories, and entities make the processing stages traceable.
+The detector provides explicit reasons and ﬁxed weights. The risk service summarizes re-
+cent evidence in a bounded score. Structured explanations and the two-loop interface add an
+investigation mechanism with deterministic fallback. Together, these components support a
+practical application-level security-monitoring demonstration.
+The evidence supports implementation conclusions, not production-readiness claims, de-
+tection accuracy, or measured latency improvements. This report identiﬁes the tests required to
+assess those properties instead of assigning unsupported ﬁgures.
+6.2 Current Limitations
+The ﬁxed off-hours rule does not learn personal schedules. IP/device baselines use strings, can
+include failures, and do not establish hardware identity or geographic plausibility. Weights lack
+empirical calibration, and multiple alerts from a single event can saturate risk quickly.
+34
+
+--- PAGE 48 ---
+Chapter 6. Conclusion and Future Work
+The brute-force query has no explicit event-time upper bound. Time conventions and his-
+torical input need careful handling. Some queries read full history, and duplicate prevention
+requires concurrency validation. Agent tools combine queries and state changes, making consis-
+tent authorization essential. Steering is request-local, execution is sequential, and the frontend
+timeout may be shorter than a multi-cycle agent request.
+6.3 Future Direction of Work
+6.3.1 Centralized Tool Policy
+Check authenticated principal, action, resource ownership, and arguments before every tool in-
+vocation. Introduce review or approval for consequential changes where appropriate. Record
+the initiating principal, target, outcome, and rationale instead of relying only on generated nar-
+rative.
+6.3.2 Detection and Data Quality
+Adopt a consistent time-zone-aware timestamp convention, enforce intended event windows,
+and test out-of-order input. Consider successful-login baselines and bounded history for IP/de-
+vice rules. Calibrate thresholds using representative labelled data and publish false positives as
+well as detections.
+6.3.3 Audit Integrity and Reliability
+Add appropriate uniqueness constraints, transaction tests, and telemetry-failure monitoring. De-
+ﬁne retention and access controls. If stronger integrity is needed, evaluate append-only storage,
+external export, or tamper-evident veriﬁcation instead of assuming database persistence supplies
+it.
+6.3.4 Agent Sessions and Interaction
+Introduce authenticated job/session identiﬁers and a channel for progress, steering, and can-
+cellation. Bound outer-loop work and request size; make operational tools idempotent where
+35
+
+--- PAGE 49 ---
+Chapter 6. Conclusion and Future Work
+possible. Report the actual inference/fallback mode used for each result and align client time-
+outs with server execution.
+6.3.5 Scale and Evaluation
+Replace growing history scans with bounded queries, review indexes with query plans, and
+measure concurrent load. Build integration tests and a labelled evaluation corpus before adding
+learned anomaly models or external SIEM ingestion. Additional authentication factors and
+stronger browser token handling are further deployment options.
+6.4 Closing Perspective
+The project’s principal contribution is the integration of transparent detection and recent risk
+with an inspectable investigation interface. Completing validation and enforcing policy at the
+tool boundary would provide a ﬁrmer basis for evaluating use beyond a development demon-
+stration.
+36
+
+--- PAGE 50 ---
+References
+[1] KA V ACH project source,login-analysis-backend and login-analysis-frontend, local snap-
+shot reviewed 17 November 2026. Source map in Appendix A.
+[2] M. Jones, J. Bradley, and N. Sakimura, JSON Web Token (JWT) , RFC 7519, May 2015.
+https://www.rfc-editor.org/rfc/rfc7519.
+[3] Spring, Spring Security Reference: Method Security . https://docs.
+spring.io/spring-security/reference/servlet/authorization/
+method-security.html. Accessed 17 November 2026.
+[4] OW ASP Foundation,Logging Cheat Sheet . https://cheatsheetseries.owasp.
+org/cheatsheets/Logging_Cheat_Sheet.html. Accessed 17 November 2026.
+[5] NIT Agartala, B.Tech 7th Semester LaTeX Template, user-supplied archive including insti-
+tutional class, logos, and chapter styling; adapted for MCA.
+37
+
+--- PAGE 51 ---
+APPENDIX A
+Source Evidence Map
+A.1 Review Basis
+The report uses the local repository reviewed on 17 November 2026 and the user-supplied NIT
+Agartala template. The existing Word draft supplied MCA context. Technical ﬁndings were
+checked against source. The report title, candidate details, supervisor, and Head of the Depart-
+ment were conﬁrmed through the candidate’s PDF review comments.
+Backend Java paths below share login-analysis-backend/src/main/java/
+com/loginanalysis/. Frontend paths share login-analysis-frontend/src/
+unless written in full.
+Table 7: Source modules supporting implementation descriptions.
+Topic Source modules
+Dependency stack login-analysis-backend/pom.xml;
+login-analysis-frontend/package.json.
+Authentication service/AuthService.java,
+service/JwtService.java,
+config/PasswordConfig.java.
+Request security config/SecurityConfig.java,
+config/JwtAuthenticationFilter.java,
+service/UserAuthorizationService.java.
+38
+
+--- PAGE 52 ---
+Appendix A. Source Evidence Map
+Topic Source modules
+Telemetry and rules service/LoginLogService.java,
+service/AnomalyDetectionService.java,
+repository/LoginLogRepository.java.
+Risk / analytics service/RiskService.java,
+repository/AnomalyRepository.java,
+service/SecurityDashboardService.java,
+service/LoginAnalyticsService.java.
+Persistence entity/User.java, entity/LoginLog.java,
+entity/Anomaly.java, entity/AuditLog.java,
+entity/AIAnalysisHistory.java.
+AI explanations service/GrokAIService.java,
+util/GrokClient.java,
+config/GrokConfig.java.
+Agent execution agent/TwoLoopAgentService.java,
+agent/tools/SecurityToolsRegistry.java,
+agent/model/AgentTool.java.
+AI endpoint controller/AIAnalysisController.java.
+Browser routing/state App.jsx, context/AuthContext.jsx,
+context/ThemeContext.jsx, api/client.js.
+Frontend pages Within pages/: LoginPage.jsx,
+DashboardPage.jsx, AnomaliesPage.jsx,
+RiskPage.jsx, LoginLogsPage.jsx,
+UsersPage.jsx, AuditPage.jsx, GrokAiPage.jsx.
+Existing test login-analysis-backend/src/test/java/com/
+loginanalysis/
+LoginAnalysisBackendApplicationTests.java.
+A.2 Evidence Classiﬁcation
+Source-conﬁrmed ﬁndings include conditions, weights, annotations, entity links, tool names,
+local queues, and iteration bounds. Worked scores are arithmetic illustrations. Proposed tests
+and future improvements are not claims of completed implementation. No runtime results,
+screenshots, or performance measurements are asserted.
+39
+
+--- PAGE 53 ---
+APPENDIX B
+Build and Completion Notes
+B.1 Source Layout
+File Purpose
+Final_Thesis.tex Main document, front matter, bibliography,
+includes.
+metadata.tex Candidate, degree, supervisor, HOD, submission
+date.
+chapter1.tex–chapter6.tex Main content.
+appendix.tex Evidence map and completion notes.
+nitathesis.cls Original institutional class.
+images/ Original institutional logo assets.
+The diagrams/ directory contains twelve detailed colored C4, UML, entity, and DFD views,
+their shared style deﬁnitions, and the chapter integration ﬁle. All diagrams are editable vector
+LaTeX sources.
+40
+
+--- PAGE 54 ---
+Appendix B. Build and Completion Notes
+B.2 Compilation
+From the report directory, run a LaTeX installation with the required packages:
+pdflatex -interaction=nonstopmode -halt-on-error Final_Thesis.tex
+pdflatex -interaction=nonstopmode -halt-on-error Final_Thesis.tex
+pdflatex -interaction=nonstopmode -halt-on-error Final_Thesis.tex
+Alternatively, run tectonicFinal_Thesis.tex. Initial runs download missing sup-
+port packages. The bibliography is embedded, so no BibTeX step is required.
+The main ﬁle restores modern ﬂoat handling after loading the legacy class. The class geom-
+etry and supplied chapter style are retained. MCA front matter replaces B.Tech sample content.
+Internship-only pages and invented publication/biography material are omitted.
+B.3 Completion Before Submission
+The candidate and faculty details are recorded in metadata.tex. Conﬁrm the submission
+date and institutional wording. Review the declaration/certiﬁcate and obtain signatures. Add
+genuine runtime screenshots to Chapter 5 if required by the department.
+Publications and Biography
+No publication or biographical details were supplied. The report makes no claims about publi-
+cations, grades, addresses, or personal academic history. Such sections can be added if veriﬁed
+material is required.
+41

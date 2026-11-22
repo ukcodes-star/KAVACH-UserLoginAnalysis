@@ -1,0 +1,56 @@
+\chapter{Source Evidence Map}
+\section{Review Basis}
+The report uses the local repository reviewed on 17 November 2026 and the user-supplied NIT Agartala template. The existing Word draft supplied MCA context. Technical findings were checked against source. The report title, candidate details, supervisor, and Head of the Department were confirmed through the candidate's PDF review comments.
+
+Backend Java paths below share \code{login-analysis-backend/src/main/java/com/loginanalysis/}. Frontend paths share \code{login-analysis-frontend/src/} unless written in full.
+\begingroup\small\setstretch{1.1}\setlength{\parskip}{0pt}
+\begin{longtable}{>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{9.8cm}}
+\caption{Source modules supporting implementation descriptions.}\\\toprule Topic & Source modules\\\midrule\endfirsthead
+\toprule Topic & Source modules\\\midrule\endhead
+Dependency stack & \code{login-analysis-backend/pom.xml}; \code{login-analysis-frontend/package.json}.\\
+Authentication & \code{service/AuthService.java}, \code{service/JwtService.java}, \code{config/PasswordConfig.java}.\\
+Request security & \code{config/SecurityConfig.java}, \code{config/JwtAuthenticationFilter.java}, \code{service/UserAuthorizationService.java}.\\
+Telemetry and rules & \code{service/LoginLogService.java}, \code{service/AnomalyDetectionService.java}, \code{repository/LoginLogRepository.java}.\\
+Risk / analytics & \code{service/RiskService.java}, \code{repository/AnomalyRepository.java}, \code{service/SecurityDashboardService.java}, \code{service/LoginAnalyticsService.java}.\\
+Persistence & \code{entity/User.java}, \code{entity/LoginLog.java}, \code{entity/Anomaly.java}, \code{entity/AuditLog.java}, \code{entity/AIAnalysisHistory.java}.\\
+AI explanations & \code{service/GrokAIService.java}, \code{util/GrokClient.java}, \code{config/GrokConfig.java}.\\
+Agent execution & \code{agent/TwoLoopAgentService.java}, \code{agent/tools/SecurityToolsRegistry.java}, \code{agent/model/AgentTool.java}.\\
+AI endpoint & \code{controller/AIAnalysisController.java}.\\
+Browser routing/state & \code{App.jsx}, \code{context/AuthContext.jsx}, \code{context/ThemeContext.jsx}, \code{api/client.js}.\\
+Frontend pages & Within \code{pages/}: \code{LoginPage.jsx}, \code{DashboardPage.jsx}, \code{AnomaliesPage.jsx}, \code{RiskPage.jsx}, \code{LoginLogsPage.jsx}, \code{UsersPage.jsx}, \code{AuditPage.jsx}, \code{GrokAiPage.jsx}.\\
+Existing test & \code{login-analysis-backend/src/test/java/com/loginanalysis/LoginAnalysisBackendApplicationTests.java}.\\\bottomrule
+\end{longtable}
+\endgroup
+
+\section{Evidence Classification}
+Source-confirmed findings include conditions, weights, annotations, entity links, tool names, local queues, and iteration bounds. Worked scores are arithmetic illustrations. Proposed tests and future improvements are not claims of completed implementation. No runtime results, screenshots, or performance measurements are asserted.
+
+\chapter{Build and Completion Notes}
+\section{Source Layout}
+\begin{tabularx}{\textwidth}{lY}\toprule File & Purpose\\\midrule
+\code{Final_Thesis.tex} & Main document, front matter, bibliography, includes.\\
+\code{metadata.tex} & Candidate, degree, supervisor, HOD, submission date.\\
+\code{chapter1.tex}--\code{chapter6.tex} & Main content.\\
+\code{appendix.tex} & Evidence map and completion notes.\\
+\code{nitathesis.cls} & Original institutional class.\\
+\code{images/} & Original institutional logo assets.\\\bottomrule\end{tabularx}
+\par\noindent The \code{diagrams/} directory contains twelve detailed colored C4, UML, entity, and DFD views, their shared style definitions, and the chapter integration file. All diagrams are editable vector LaTeX sources.
+
+\clearpage\section{Compilation}
+From the report directory, run a LaTeX installation with the required packages:
+\par\noindent\begin{minipage}{\textwidth}
+\begin{lstlisting}
+pdflatex -interaction=nonstopmode -halt-on-error Final_Thesis.tex
+pdflatex -interaction=nonstopmode -halt-on-error Final_Thesis.tex
+pdflatex -interaction=nonstopmode -halt-on-error Final_Thesis.tex
+\end{lstlisting}
+\end{minipage}\par
+Alternatively, run \code{tectonic Final_Thesis.tex}. Initial runs download missing support packages. The bibliography is embedded, so no BibTeX step is required.
+
+The main file restores modern float handling after loading the legacy class. The class geometry and supplied chapter style are retained. MCA front matter replaces B.Tech sample content. Internship-only pages and invented publication/biography material are omitted.
+
+\section{Completion Before Submission}
+The candidate and faculty details are recorded in \code{metadata.tex}. Confirm the submission date and institutional wording. Review the declaration/certificate and obtain signatures. Add genuine runtime screenshots to Chapter 5 if required by the department.
+
+\section*{Publications and Biography}
+No publication or biographical details were supplied. The report makes no claims about publications, grades, addresses, or personal academic history. Such sections can be added if verified material is required.

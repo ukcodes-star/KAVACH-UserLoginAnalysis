@@ -1,0 +1,11 @@
+\begin{tikzpicture}
+\dn{person}{user}{0}{0}{4.2}{\textbf{Account user}\\\footnotesize [Person]\\Authenticates; reviews permitted personal activity}
+\dn{person}{admin}{8.7}{0}{4.2}{\textbf{Administrator}\\\footnotesize [Person]\\Investigates global activity and manages accounts}
+\dn{app}{system}{4.35}{-4.2}{7}{\textbf{KAVACH}\\\mbox{[Software system]}\\Login telemetry, six detection rules, recent risk, audit records, AI-assisted investigation}
+\dn{ai}{provider}{4.35}{-9}{6.2}{\textbf{xAI / Grok model service}\\\footnotesize [External software system]\\Optional model inference; no direct database access}
+\draw[dep] (user.south)--node[edge,pos=.5]{Credentials, personal queries\\Token, own activity, explanations}(system.north west);
+\draw[dep] (admin.south)--node[edge,pos=.5]{Administrative queries, account actions\\Metrics, records, tool results}(system.north east);
+\draw[dep] ([xshift=-1.2cm]system.south)--node[edge,left]{Sanitized analysis context\\and tool schemas}(provider.north west);
+\draw[ret] (provider.north east)--node[edge,right]{Model text / tool calls\\or provider failure}(system.south east);
+\dn{note}{scope}{4.35}{-12}{11.3}{\textbf{Scope:} PostgreSQL and the browser application are inside KAVACH and appear in the container view. The provider is optional; deterministic fallback remains inside the backend. Actor permissions are enforced by server-side policy, not by the model.}
+\end{tikzpicture}

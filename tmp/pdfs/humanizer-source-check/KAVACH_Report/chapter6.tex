@@ -1,0 +1,9 @@
+\chapter{Conclusion and Future Work}
+\section{Conclusion}
+KAVACH records authenticated login activity, applies six explicit detection rules, and calculates a capped 24-hour account risk score. Security views and audit records support investigation. The LLM interface connects requests to thirteen application tools through a two-loop service, with deterministic fallback when live inference is unavailable. The repository and screenshots show the implementation and interface design. Detection accuracy and production performance still require measurement.
+
+\noindent\textbf{Limitations.}
+Fixed login hours and comparisons of IP or device strings can identify unusual values without establishing account compromise. The weights remain uncalibrated. The brute-force query has no explicit upper time bound, and duplicate prevention needs concurrency testing. Steering is local to each request, tools run sequentially, and operational tools need consistent authorization. Storing audit records alone provides no demonstrated tamper resistance.
+
+\noindent\textbf{Future work.}
+The next priorities are a centralized authorization policy for tools, reliable event-time handling, database constraints, and integration tests for each rule. Agent sessions need authentication, cancellation, and live steering. Audit retention needs protection, and query limits and concurrent performance need testing. A labelled evaluation corpus should guide threshold calibration before adding learned anomaly models, external SIEM integration, or more authentication factors.

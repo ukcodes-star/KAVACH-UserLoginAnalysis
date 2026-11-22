@@ -1,0 +1,26 @@
+\chapter{Design Analysis}
+\section{Layered Design}
+Controllers receive HTTP requests, apply declared access restrictions, and pass inputs to services. Services implement authentication, telemetry, detection, scoring, analysis, and orchestration. Repository interfaces express persistence operations and aggregate queries. DTOs shape responses so clients receive page data without directly controlling entity persistence.
+
+The frontend organizes features as pages and shared layout/UI components. Authentication and theme contexts hold browser state. A common Axios client adds bearer credentials, normalizes failures, and emits diagnostic information. These boundaries make the workflows traceable to source modules \cite{repo}.
+
+\input{diagrams/design-views}
+
+\section{Access-Control Design}
+HTTP security permits authentication routes and requires authentication elsewhere. The JWT filter validates tokens, resolves current accounts, rejects inactive users, and installs the current role. Method security is enabled. Spring documents method security as authorization on method invocations \cite{spring}.
+
+Controllers restrict selected operations to ADMIN and allow ADMIN-or-USER access to selected personal resources. Ownership checks compare current user IDs with requested resource owners. Frontend guards guide navigation; backend policy remains authoritative.
+\begin{table}[htbp]\centering\small\caption{Principal access boundaries.}
+\begin{tabularx}{\textwidth}{YYY}\toprule Capability & Scope & Boundary\\\midrule
+Registration / login & Public & Authentication routes.\\
+Global dashboard / audit & Administrator & Controller role checks.\\
+Personal logs / anomalies / risk & Administrator or owner & Selected controller and service ownership checks.\\
+Directory changes & Administrator through direct API & Administrative controller methods.\\
+Agent loop / tools & ADMIN or USER endpoint & Execution needs its own resource/action policy.\\\bottomrule\end{tabularx}\end{table}
+
+Registry tools can access repositories and services directly. An administrative controller annotation does not automatically protect another call path that bypasses that controller. Centralized authorization at tool execution is therefore required hardening; this report does not assume identical policy enforcement across every REST and tool route.
+
+\section{API and Error Handling}
+The common client sends JSON, uses a 30-second timeout, and reads the bearer token from local storage. Unauthorized responses outside authentication routes clear stored credentials and dispatch an event to update UI state. The backend provides unauthorized/forbidden responses and structured application errors. Some security-filter audit failures are caught so the primary response can still be returned.
+
+Agent requests may involve several model cycles and can outlast a single frontend timeout. Timeout, cancellation, retry, and idempotency need joint testing, especially for operations that change state.

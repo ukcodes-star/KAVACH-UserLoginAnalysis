@@ -1,0 +1,1156 @@
+
+--- PAGE 1 ---
+OPPORTUNITY ENGINE: A VERIFIED
+STUDENT OPPORTUNITY RADAR
+Aditya Kumar
+COMPUTER SCIENCE & ENGINEERING DEPARTMENT
+NATIONAL INSTITUTE OF TECHNOLOGY, AGARTALA
+INDIA-799046
+November, 2026
+
+--- PAGE 2 ---
+OPPORTUNITY ENGINE: A VERIFIED
+STUDENT OPPORTUNITY RADAR
+Report submitted to
+National Institute of Technology, Agartala
+for the award of the degree
+of
+Master of Computer Applications
+by
+Aditya Kumar (24MCA020)
+Under the Guidance of
+Dr. Nikhil Debbarma
+Assistant Professor
+COMPUTER SCIENCE & ENGINEERING DEPARTMENT
+NATIONAL INSTITUTE OF TECHNOLOGY AGARTALA
+November, 2026
+
+--- PAGE 3 ---
+Dedicated To
+For my supervisor, Dr. Nikhil Debbarma, who gave me his time,
+guidance and trust throughout this project.
+I also dedicate this work to the faculty whose teaching helped me
+reach this point and to everyone who helped me build the project
+along the way.
+iii
+
+--- PAGE 4 ---
+A good opportunity should be easy to find and still be open
+when a student is ready to apply.
+iv
+
+--- PAGE 5 ---
+REPORT APPROV AL FOR MCA
+This report entitled “ Opportunity Engine : A Verified Student Opportunity Radar ”, by Aditya
+Kumar (24MCA020) is approved in partial fulfilment of the requirements for the award ofMaster
+of Computer Applications in Computer Science & Engineering.
+Dr. Nikhil Debbarma
+(Project Supervisor)
+Assistant Professor
+Computer Science and Engineering Department
+NIT Agartala
+Dr. Ashim Saha
+(Head of the Department)
+Associate Professor
+Computer Science and Engineering Department
+NIT Agartala
+Date:
+Place: NIT, Agartala
+v
+
+--- PAGE 6 ---
+DECLARATION
+I declare that the work presented in this report titled “Opportunity Engine: A Verified
+Student Opportunity Radar ”, submitted to the Computer Science and Engineering
+Department, National Institute of Technology, Agartala, for the award of the Master
+of Computer Applications degree in Computer Science & Engineering , represents
+my ideas in my own words and where others’ ideas or words have been included,
+I have adequately cited and referenced the original sources. I also declare that I
+have adhered to all principles of academic honesty and integrity and have not mis-
+represented or fabricated or falsified any idea/data/fact/source in my submission. I
+understand that any violation of the above will be a cause for disciplinary action
+by the Institute and can also evoke penal action from the sources which have thus
+not been properly cited or from whom proper permission has not been taken when
+needed.
+November, 2026
+NIT Agartala Aditya Kumar (24MCA020)
+vi
+
+--- PAGE 7 ---
+CERTIFICATE
+It is certified that the work contained in the report titled Opportunity Engine: A Verified Student
+Opportunity Radar, by Aditya Kumar (Enrolment No. 24MCA020), has been carried out under
+my supervision. This work has not been submitted elsewhere for a degree.
+Dr. Nikhil Debbarma
+(Project Supervisor)
+Assistant Professor
+Computer Science and Engineering Department
+NIT Agartala
+Dr. Ashim Saha
+(Head of the Department)
+Associate Professor
+Computer Science and Engineering Department
+NIT Agartala
+Date:
+Place: NIT, Agartala
+vii
+
+--- PAGE 8 ---
+Acknowledgement
+I thank my supervisor, Dr. Nikhil Debbarma, Assistant Professor in the Department of Com-
+puter Science and Engineering at NIT Agartala. His guidance, feedback and encouragement
+helped me develop Opportunity Engine from design through implementation.
+I also thank Dr. Ashim Saha, Head of the Department, and the faculty and administrative staff
+at NIT Agartala for access to computing resources and laboratory facilities, and for their support
+throughout the project. I am grateful to my family and friends for their patience, feedback and
+encouragement.
+Aditya Kumar (24MCA020)
+viii
+
+--- PAGE 9 ---
+List of Figures
+3.1 System architecture. Scouts write found rows; the verifier publishes them. The
+maintainer expires and re-verifies published listings. An operator resolves re-
+view items. The web client accesses the database through the API. . . . . . . . 6
+3.2 Level 0 DFD. System context for listing discovery and review. . . . . . . . . . 8
+3.3 Level 1 DFD. Capture, verification, browsing, and human review. . . . . . . . . 9
+3.4 Level 2 DFD. Decomposition of process 2.0, Verify and maintain listings. . . . 10
+3.5 Sequence diagram. Initial publication and a later scheduled recheck. . . . . . . 11
+3.6 Activity diagram. Decision paths for a new or published listing. . . . . . . . . . 12
+3.7 Use case diagram. Student and operator interactions. . . . . . . . . . . . . . . 13
+7.1 Public board with listing totals, category tabs, filters and search. . . . . . . . . 25
+7.2 Human verification queue . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+7.3 Pipeline observability overview . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+8.1 Database schema in UML class notation . . . . . . . . . . . . . . . . . . . . . 29
+ix
+
+--- PAGE 10 ---
+List of Tables
+1 The four pipeline layers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+2 Documented capture schedules and sources . . . . . . . . . . . . . . . . . . . 15
+3 Selected public API endpoints (no authentication). . . . . . . . . . . . . . . . 21
+4 Selected admin endpoints. All except sign-in require a JWT. . . . . . . . . . . 22
+5 Client structure (React + Vite). . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+6 Database tables. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+x
+
+--- PAGE 11 ---
+Abstract
+Listings for jobs, internships, hackathons and events can circulate after their application links
+fail or their deadlines pass. A summary can also give a deadline the source never published.
+Opportunity Engine collects student opportunities and checks them against their source pages.
+Scouts collect listings from company career sites, social platforms and hackathon boards. A
+verifier checks the application page before publication. The maintainer rechecks published links
+and expires past-due listings, while an operator reviews cases that need judgement. The system
+stores direct application or registration links. Workers coordinate through PostgreSQL, where a
+trigger records changes to listing status and verification status. The report describes the public
+API and web client and reports observations from the first two weeks of operation.
+xi
+
+--- PAGE 12 ---
+Contents
+Acknowledgement viii
+Abstract xi
+1 Introduction 1
+1.1 Problem statement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2 Motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.3 Objectives . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.4 Scope and non-goals . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.5 Organisation of the report . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+2 Background and Related Work 3
+2.1 Job aggregators . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.2 Applicant tracking systems . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.3 Multi-agent pipelines . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.4 Trust and freshness in listing systems . . . . . . . . . . . . . . . . . . . . . . . 4
+2.5 Gap addressed . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+xii
+
+--- PAGE 13 ---
+CONTENTS
+3 System Architecture 5
+3.1 Overview . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+3.2 The four layers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3.3 Deployment topology . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+3.4 Technology choices . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+3.5 Design principles . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+3.6 Data flow and verification models . . . . . . . . . . . . . . . . . . . . . . . . 8
+4 Agent Layer 14
+4.1 Organisation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+4.2 Layer 1: Capture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+4.3 Layer 2: Trust: the verifier . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+4.4 Layer 3: Freshness: the maintainer and the watchdog . . . . . . . . . . . . . . 15
+4.5 Concurrency and claiming . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+4.6 Layer 4: Judgement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+5 Rules and Policy Engine 17
+5.1 Why rules live in a file, not in prompts . . . . . . . . . . . . . . . . . . . . . . 17
+5.2 Hard boundaries . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+5.3 The data contract . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+5.4 The verification rules . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+5.5 Dedup and eligibility . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+5.6 The policies table . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+6 Server and Public API 20
+xiii
+
+--- PAGE 14 ---
+CONTENTS
+6.1 Overview . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+6.2 Public endpoints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+6.3 Caching public opportunity reads . . . . . . . . . . . . . . . . . . . . . . . . . 20
+6.4 Admin endpoints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+6.5 Metering and access control . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+6.6 Agent metadata and the down rule . . . . . . . . . . . . . . . . . . . . . . . . 22
+7 Web Client 23
+7.1 Overview . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+7.2 Public board . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+7.3 Admin console . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+7.4 Components . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+7.5 Interface screenshots . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+8 Database Design 27
+8.1 Overview . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+8.2 Core tables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+8.3 Entity relationships . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+8.4 The opportunities table . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+8.5 Audit and review . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+8.6 Runs and heartbeats . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+8.7 Security model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+9 Deployment, Operations and Observability 32
+9.1 Deployment . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+xiv
+
+--- PAGE 15 ---
+CONTENTS
+9.2 Operations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+9.3 Observability . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+9.4 Failure handling . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+10 Results and Discussion 34
+10.1 Live deployment . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+10.2 Throughput . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+10.3 Verification outcomes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+10.4 Discussion: what broke, and what it taught . . . . . . . . . . . . . . . . . . . . 35
+A Agent context file tree 37
+B Database tables 38
+C API quick reference 39
+D Publications related to report work 40
+E Biographical sketch 41
+xv
+
+--- PAGE 16 ---
+CHAPTER 1
+Introduction
+1.1 Problem statement
+Students find jobs, internships, hackathons and fellowships on employer career pages, applicant
+tracking systems, social platforms, aggregators and chat groups. A listing can stay in circulation
+after the employer fills the role or closes applications. Even when the link works, a summary
+may give a deadline or eligibility rule that differs from the original posting. Students have to
+check several sources and can still miss openings.
+Keeping a listing current takes more work than collecting it. Someone has to check whether
+the application link works, confirm the deadline and eligibility on the source page, and repeat
+those checks as the listing ages. Opportunity Engine makes those checks part of the job board’s
+regular operation.
+1.2 Motivation
+I encountered these problems while applying to about fifty roles during my postgraduate studies
+as I worked towards a full-time software engineering offer. Some aggregator listings were al-
+ready closed on the employer’s site. Others described eligibility as 2026 batch or B.Tech only in
+prose, so I could not filter for it reliably. Round-ups sometimes gave a deadline that the employer
+had never published. I also found the same role listed under different titles or spellings of the
+1
+
+--- PAGE 17 ---
+CHAPTER 1. INTRODUCTION
+company name. Those experiences shaped what I wanted the board to record and check.
+1.3 Objectives
+1. Build a multi-vertical opportunity board covering jobs, internships, hackathons and events
+for batches 2025–2030 and streams B.Tech, MCA and others, for India and remote roles
+worldwide.
+2. Capture listings continuously with autonomous agents (scouts) that read the source page
+and record only explicitly stated facts.
+3. Verify every listing before it is shown as trustworthy, and re-verify it on a schedule so that
+dead links and expired postings leave the board automatically.
+4. Enforce a strict link rule: the stored link must be the direct apply or registration URL, or
+the row is skipped entirely.
+5. Keep all verification decisions auditable, with a database-backed transition log and a hu-
+man review queue for ambiguous cases.
+6. Serve the board through a public API and a web client that any student can use without an
+account, with an admin console for review and observability.
+1.4 Scope and non-goals
+The public board helps students discover and verify opportunities without an account. Students
+complete their own applications on the source site. Opportunity Engine does not submit ap-
+plications, send messages on a student’s behalf, or store student credentials or resumes. The
+subscription form records an email address and filters. Scheduled delivery is planned, and the
+site has no payment flow. The admin console requires authentication.
+1.5 Organisation of the report
+Chapter 2 places the project in the context of job boards and agent systems. Chapters 3 to 5
+describe the architecture, workers and verification rules. The API, web client and database are
+covered in Chapters 6 to 8. Chapter 9 describes deployment and operations. Chapter 10 covers
+the deployment results and incidents.
+2
+
+--- PAGE 18 ---
+CHAPTER 2
+Background and Related Work
+2.1 Job aggregators
+General job boards such as LinkedIn, Indeed and Glassdoor collect postings from many sources.
+A copy can remain searchable after the employer closes the original. Student-oriented boards
+such as Internshala, Cutshort and Unstop can narrow the search, but eligibility often appears in
+free text. Checking a source again costs an extra request and, in some cases, a browser session.
+That cost grows with both the number of postings and the frequency of checks.
+2.2 Applicant tracking systems
+Employers use systems such as Lever, Greenhouse, Ashby, Workday, Phenom, iCIMS, Suc-
+cessFactors, SmartRecruiters and Eightfold to publish jobs. An individual posting can expose
+an application action or a closed notice that a search result may miss. A redirect or 404 calls for
+a closer check of the URL and its history. The scouts use the posting page as their source for
+these checks.
+3
+
+--- PAGE 19 ---
+CHAPTER 2. BACKGROUND AND RELATED WORK
+2.3 Multi-agent pipelines
+The workers use a blackboard pattern. PostgreSQL holds the listing state, and each worker
+reads rows at the stage it handles. Workers can restart independently because they exchange
+records through the database. SELECT …FOR UPDATE SKIP LOCKED lets concurrent workers
+claim different rows. The number of waiting rows helps operators locate a backlog.
+Huyen covers application design and evaluation for foundation models [2]. Meta describes Muse
+as a personal AI agent and explains the tool use and agent coordination supported by Muse
+Spark [3, 5].
+2.4 Trust and freshness in listing systems
+The verifier holds a listing if it cannot establish that students can apply. A successful first check
+can publish the listing with a pending verification status. The maintainer can change it to veri-
+fied after a separate successful check. Suspected duplicates and other cases that need a decision
+can enter the human review queue.
+2.5 Gap addressed
+Opportunity Engine collects listings from employer systems, social platforms and hackathon
+boards in one place. It records eligibility that the source actually states and checks each appli-
+cation link. The board exposes the resulting verification status. The database records changes
+so an operator can trace how a listing reached its current state.
+4
+
+--- PAGE 20 ---
+CHAPTER 3
+System Architecture
+3.1 Overview
+The web client reads listings from the API. The API and the scheduled agents use the same
+PostgreSQL database. Workers pick up records in the state they handle and write back the result.
+That arrangement lets workers restart independently and lets operators see a backlog through the
+number of waiting records.
+5
+
+--- PAGE 21 ---
+CHAPTER 3. SYSTEM ARCHITECTURE
+Figure 3.1: System architecture. Scouts write found rows; the verifier publishes them. The maintainer
+expires and re-verifies published listings. An operator resolves review items. The web client
+accesses the database through the API.
+3.2 The four layers
+Table 1: The four pipeline layers
+Layer Workers Input Output
+1 Capture Scouts and researcher Source pages Candidate records marked found
+2 Trust Verifier Candidate records Published listings with pending
+trust
+3 Freshness Maintainer and
+watchdog
+Published listings Expiry, recheck results, or review
+items
+4 Judgement Operator via admin
+console
+Open reviews Resolved reviews
+• Scouts: ∅ → found.
+• Verifier: found →published after a successful check.
+• Maintainer: past-due listings move from published toexpired. Overdue pending ver-
+ifications go to review.
+6
+
+--- PAGE 22 ---
+3.3. DEPLOYMENT TOPOLOGY
+• Human: open review → resolved.
+T wo fields track the listing independently. The status field records its lifecycle, including
+found, verifying, published, expired and dropped. The verification_status field
+records trust as pending, verified or flagged. A published listing can still be pending, and
+a verified listing can later expire.
+3.3 Deployment topology
+The React frontend and Express API run on an Azure virtual machine. Nginx terminates HTTPS
+and routes requests by hostname. PM2 serves the static Vite build and manages the Express
+process. The API and agent workers use the shared Neon PostgreSQL database. The pub-
+lic board is at https://opportunity-engine.interstellardevx.tech/ and the API is at
+https://api.opportunity-engine.interstellardevx.tech/.
+3.4 Technology choices
+The agents, server and client use T ypeScript, with types defined for their respective interfaces.
+PostgreSQL has the row locks needed to claim work atomically. Triggers record state changes,
+and JSONB holds eligibility details that do not fit into fixed columns.
+The Express server uses Prisma for database access and JWT authentication for protected admin
+routes. The agents send raw SQL through the Neon HTTP API, so they need no persistent
+database connection. React and Vite produce a static client. Hash routing keeps page routing
+inside the browser.
+3.5 Design principles
+The first verification pass is intended to handle straightforward listings quickly. A later recheck
+or a human review handles cases that need more evidence. A listing on hold stays out of the
+verified set. When a worker’s report is unclear, operators can compare it with the database
+records and findings files.
+7
+
+--- PAGE 23 ---
+CHAPTER 3. SYSTEM ARCHITECTURE
+3.6 Data flow and verification models
+Students and operators use the web application, while the workers read source websites. Fig-
+ure 3.2 shows those exchanges at the system boundary. Figure 3.3 follows the listing and review
+records through capture, verification, browsing and human review.
+Student
+Operator
+0
+Opportunity Engine
+Source
+websites
+Search filters
+Listings
+Review request
+ and decision
+Queue and
+ resolution
+Page request
+Source page
+Figure 3.2: Level 0 DFD. System context for listing discovery and review.
+8
+
+--- PAGE 24 ---
+3.6. DATA FLOW AND VERIFICATION MODELS
+Source
+websites
+1.0 Capture
+ listings
+D1
+Opportunities
+Source
+websites
+2.0 Verify and
+maintain listings
+D1
+Opportunities
+Student
+3.0 Serve
+published listings
+D1
+Opportunities
+Operator
+4.0 Manage
+human reviews
+D2
+Reviews
+Discovery request
+Source page
+Apply-page request
+Page evidence
+Published listings
+Search filters
+Queue and resolution
+Review request and
+ decision
+Candidate record
+Candidate or
+ due record
+Status update
+Published records
+Open reviews
+Resolution
+D2 Reviews
+Review item
+Repeated D1 and D2 symbols denote the same stores.
+Figure 3.3: Level 1 DFD. Capture, verification, browsing, and human review.
+9
+
+--- PAGE 25 ---
+CHAPTER 3. SYSTEM ARCHITECTURE
+Process 2.0 reads candidate listings and published records due for a recheck. Its results include
+status updates and, when needed, new review items. Figure 3.4 follows both outputs.
+D1
+Opportunities
+2.1 Select candidate
+ or due listing
+2.2 Assess liveness
+and publication readiness
+Source
+websites
+2.3 Record verification
+ or maintenance result
+D1
+Opportunities
+D2
+Reviews
+Listing record
+Selected record
+Page request
+Page evidence
+Check outcome
+Status update
+Review item
+Elapsed
+deadline record
+Figure 3.4: Level 2 DFD. Decomposition of process 2.0, Verify and maintain listings.
+10
+
+--- PAGE 26 ---
+3.6. DATA FLOW AND VERIFICATION MODELS
+The verifier and maintainer do their checks in separate runs. The sequence in Figure 3.5 shows
+what each worker reads and writes, and when it requests the source page.
+Verifier
+PostgreSQL
+Source website
+Maintainer
+Claim a found listing
+Listing record
+Check link and apply action
+Page evidence
+alt  Initial check outcome
+[Pass] Publish as pending
+[Held] Keep unpublished
+opt  Later recheck of a published listing
+ Read due published listing
+Recheck apply page
+Page evidence
+Update trust status or open review
+Figure 3.5: Sequence diagram. Initial publication and a later scheduled recheck.
+11
+
+--- PAGE 27 ---
+CHAPTER 3. SYSTEM ARCHITECTURE
+A candidate can be published or held. An already published listing can expire, retain its status,
+or earn verified status after a clean recheck when policy permits it. Figure 3.6 also shows where
+a review may be opened.
+Select listing for processing
+New candidate?
+Check apply page and
+ look for conflicts
+Ready to publish?
+Publish with
+pending trust
+Hold listing; open review
+ when required
+Deadline passed?
+Expire listing
+Recheck the live
+ apply page
+Clean recheck and
+promotion allowed?
+Update trust to verified
+Keep current trust or
+ flag for review
+Yes
+No: already published
+Yes
+No
+Yes
+No
+Yes
+No
+Figure 3.6: Activity diagram. Decision paths for a new or published listing.
+12
+
+--- PAGE 28 ---
+3.6. DATA FLOW AND VERIFICATION MODELS
+Students can search and filter listings, inspect details, save opportunities, open the application
+page, report a dead link, or register for email alerts. Operators sign in to handle reviews and
+inspect agent health, run history and listing state changes (Figure 3.7).
+Opportunity Engine
+Public board
+Admin console
+Student
+Operator
+Search and filter listings
+Sign in
+View listing details
+Inspect the review queue
+Save opportunities
+Resolve a review
+Open the original apply page
+Check agent health
+Report a dead link
+Inspect agent run history
+Register for email alerts
+Inspect listing state changes
+Reviews and monitoring require sign-in.
+Figure 3.7: Use case diagram. Student and operator interactions.
+13
+
+--- PAGE 29 ---
+CHAPTER 4
+Agent Layer
+4.1 Organisation
+The scouts, researcher, verifier, maintainer and watchdog run on schedules. Each worker has a
+directory underagents/context/<agent>/. Its soul.md defines the worker’s role,rules.md
+holds its instructions, memory.md holds brief working notes, and learning.md records lessons
+from incidents.
+The shared global/ directory contains two files. rules.md holds the common policy and
+memory.md holds shared notes. Workers can propose additions to the notes. The main agent
+decides which to accept and records accepted changes in Git.
+4.2 Layer 1: Capture
+The scouts collect listings on their own schedules. Before inserting a row as found, the shared
+ingestion code checks field types, normalises the title and checks for duplicates.
+The Fortune 500 scout checks one group of 25 companies each hour. A full rotation through
+20 groups takes about 20 hours. A pointer file records the last completed group so the next run
+can resume there. The portal scout also checks startup boards supplied by the researcher. It
+prioritises YC startups and high-growth companies with public ATS boards.
+14
+
+--- PAGE 30 ---
+4.3. LAYER 2: TRUST: THE VERIFIER
+Table 2: Documented capture schedules and sources
+Agent Cadence Sources Coverage or behaviour
+Portal scout 15 min Lever, Greenhouse, and
+Ashby
+Meesho, CRED, Groww, and
+smallest.ai
+Reddit scout 15 min r/developersIndia and
+related communities
+Checks for new posts
+LinkedIn scout Hourly LinkedIn feed Read-only and stops on
+challenges
+Devpost scout Daily, 09:46 Devpost Open online hackathons
+Fortune 500 scout Hourly 500 company career sites Rotates through 20 groups of
+25
+Events scout Hourly Unstop Hackathons, workshops, and
+meetups
+Source researcher 30 min Public web Identifies new sources
+The LinkedIn interval comes from the dashboard API metadata.
+The source researcher checks directories, fellowship programmes, community boards and uni-
+versity recruiting pages for new sources. It confirms that each source page is live and files it
+once, with any eligibility conditions it records. Project notes report more than 220 researcher
+batches and over a hundred sources, including bank career pages and fellowship programmes.
+4.3 Layer 2: Trust: the verifier
+Every 15 minutes, the verifier claims a batch of found rows (Section 4.5). It checks that the
+application link loads and offers an active way to apply. An inconclusive row stays on hold.
+Possible duplicates or conflicts go to the review queue with the verifier’s reasoning. A row that
+passes moves to published withverification_status still set to pending.
+4.4 Layer 3: Freshness: the maintainer and the watchdog
+The maintainer runs every 15 minutes. It expires past-due listings, rechecks links when due and
+sends overdue verifications to the review queue. A clean recheck can award theverified badge
+if the row is eligible for promotion under verification.promote_on_reverify. The policy
+excludes flagged rows from automatic promotion.
+15
+
+--- PAGE 31 ---
+CHAPTER 4. AGENT LAYER
+The watchdog checks heartbeats every 15 minutes. It reports an agent as down once its last
+heartbeat is more than twice the expected run interval old. The API assesses dashboard health
+from the stored heartbeats and configured intervals. Operators should compare those intervals
+with the scheduler when diagnosing a missed run.
+4.5 Concurrency and claiming
+Workers use an atomic common table expression built onSELECT …FOR UPDATE SKIP LOCKED
+to claim rows and mark themverifying. Concurrent instances skip locked rows. If an instance
+crashes, a claim older than fifteen minutes can be reclaimed.
+Therun-wrap wrapper records the start and outcome of each run inagent_runs, including any
+error details. The heartbeat table keeps the latest run per agent for the dashboard.
+4.6 Layer 4: Judgement
+Only an operator can merge rows, drop one based on judgement, or override an agent’s decision.
+The admin review queue shows which field is in dispute, the suggested values and sources, and
+the agent’s reasoning. The operator chooses a resolution and records it on the review.
+16
+
+--- PAGE 32 ---
+CHAPTER 5
+Rules and Policy Engine
+5.1 Why rules live in a file, not in prompts
+The workers load agents/context/global/rules.md at the start of each run. Its rules take
+precedence over task instructions. That matters when a worker reads a page containing its own
+instructions or receives a different task on a later run. Workers cannot edit the file. Changes are
+proposed in chat, applied by the main agent, and committed to Git.
+5.2 Hard boundaries
+• Workers may find and verify opportunities. They may not fill forms, submit applications
+or sign up for services.
+• Workers may not read, write, log or transmit API keys, tokens, passwords or connection
+strings. The Neon credential is in the Secure Vault. Worker configuration contains the
+hostname and credential name.
+• LinkedIn access is read-only. Workers may not send requests or messages, like content or
+post. They stop and report any verification challenge.
+• Workers leave the global rules and the user’s memory file alone. They write run notes to
+a dated log.
+17
+
+--- PAGE 33 ---
+CHAPTER 5. RULES AND POLICY ENGINE
+5.3 The data contract
+• Store the direct application or registration URL in link. Skip a candidate when a direct
+URL or active application action cannot be confirmed. The place where it was found goes
+in sourceUrl, such as a discussion thread, index or aggregator. Direct Google Forms
+links (forms.gle/* or docs.google.com/forms/*) are recorded without opening the
+form.
+• Fill batches[] and streams[] only when the posting states them. If the wording is
+ambiguous, leave the arrays empty and record the details in eligibility.
+• Apart from the Google Forms exception, use a URL the agent has opened. Skip entries
+that cannot be verified or appear to be scams.
+• Use the hiring organisation for company. Normalise obvious spelling variants when writ-
+ing the row.
+5.4 The verification rules
+• Confirm the deadline on the source page. A scout report or round-up can indicate that
+applications may close soon.
+• After a 404, check alternate slugs against the listing’s URL history before concluding that
+the posting is gone.
+• A result missing from a feed needs a separate check.
+• Check quotations against the fetched posting. Some browser summaries have included
+sentences that were absent from the page.
+• Retry aBLOCKED page on the next rotation. A bot challenge or outage leaves the posting’s
+status unresolved.
+• Use a closed-application banner as evidence that the application has closed, even if a prior
+check marked it live.
+18
+
+--- PAGE 34 ---
+5.5. DEDUP AND ELIGIBILITY
+5.5 Dedup and eligibility
+The database has a unique constraint over the normalised (type, company, title, link)
+tuple. A trigram match on normalised company and title (similarity ≥ 0.9) can send a possible
+duplicate to review before publication.
+The agents record explicit eligibility criteria. The student profile can move matching rows up
+the ranking, while all listings remain available. The review queue handles ambiguous eligibil-
+ity. Programme membership alone is not treated as a restriction. A training-first funnel with a
+separate application site does not qualify as a direct application link.
+5.6 The policies table
+Administrators can edit the settings in policies through the authenticated API without rede-
+ploying the agents. verification.promote_on_reverify controls automatic promotion af-
+ter a recheck. The maintainer uses verification.sla_hours to determine when a verification
+is overdue.
+19
+
+--- PAGE 35 ---
+CHAPTER 6
+Server and Public API
+6.1 Overview
+The Express server is written in T ypeScript and accesses PostgreSQL through Prisma 6. The
+public API uses /api/v1. Protected admin routes under that prefix require a JWT bearer token,
+which expires after 12 hours. The server listens on the configured port or defaults to 4000.
+In production it runs behind a proxy. The host checks its status at /health, which returns
+{"ok":true}.
+6.2 Public endpoints
+The board requests a page of listings with filters for type, batch, stream, applications closing
+soon and free text. A dead-link report submitted to /reports becomes a review item. The API
+contract at /llms.txt gives other agents the information they need to query the board.
+6.3 Caching public opportunity reads
+Successful list and detail lookups stay in memory for 30 seconds, with up to 128 entries in each
+cache. A list entry is keyed by the filters, sort order and pagination. A detail entry is keyed by
+listing ID. Concurrent requests for the same key share a database lookup. The server renders
+20
+
+--- PAGE 36 ---
+6.4. ADMIN ENDPOINTS
+Endpoint Purpose
+GET /opportunities List with filters: type,batch,
+stream,closingSoon,q,page
+GET /opportunities/:id Single listing
+GET /policies Public runtime policy values
+POST /reports Report a dead link (opportunityId,reason)
+POST /notify Subscribe by e-mail with filters
+GET /llms.txt Agent-readable contract for the API
+Table 3: Selected public API endpoints (no authentication).
+JSON and Markdown separately from the same cached data.
+The server retries errors and missing listings on subsequent requests. Admin listing edits and
+duplicate resolutions invalidate the relevant cache data. Direct database updates by workers can
+take up to 30 seconds to appear. X-Cache reports a hit or miss. When an ETag matches, the
+server can return 304 Not Modified.
+6.4 Admin endpoints
+The seed script needs an admin email address and password in the server configuration. If either
+is absent, it skips seeding. The admins table holds a bcrypt hash that the API checks at sign-in.
+6.5 Metering and access control
+The API logs requests to /api/v1/* in api_usage, using the API key header or the client IP
+to identify usage. A paid tier could use those records in the future. The public API permits
+cross-origin requests. Protected routes still check bearer tokens.
+21
+
+--- PAGE 37 ---
+CHAPTER 6. SERVER AND PUBLIC API
+Endpoint Purpose
+POST /admin/login E-mail + password → JWT
+GET /admin/reviews Open review queue
+POST /admin/reviews/:id/resolve Resolve with a value
+GET /admin/opportunities Filtered admin listing view
+PATCH /admin/opportunities/:id Correct a row
+GET|PUT /admin/policies[/:key] Read/write runtime policy
+GET /admin/stats Queue depth per layer
+Table 4: Selected admin endpoints. All except sign-in require a JWT.
+6.6 Agent metadata and the down rule
+src/agents.ts defines the names and expected intervals for monitored workers. The API and
+watchdog treat an agent as down when its stored heartbeat is more than twice its expected interval
+old.
+22
+
+--- PAGE 38 ---
+CHAPTER 7
+Web Client
+7.1 Overview
+Vite builds the React and T ypeScript client as static files for the Azure VM. The client takes its
+API origin from VITE_API_URL. Hash routes such as #/admin and#/admin/observability
+use the same entry page. The site name appears in the header, with a separate favicon in the
+browser tab.
+7.2 Public board
+A listing card shows the title, company, location, deadline countdown, eligible batches and ver-
+ification status. The Apply button opens the original posting. A published listing can still show
+pending verification.
+Students can filter by type, batch, stream, deadline proximity or text. They can sort by newest,
+deadline or the default ranking, and switch between card and list views. The email subscription
+form records the selected filters. Agent health is shown in the admin console, and the public
+board makes no requests for agent status or curation policies.
+23
+
+--- PAGE 39 ---
+CHAPTER 7. WEB CLIENT
+7.3 Admin console
+The sign-in page sends the entered credentials to the API and receives a JWT. It starts with empty
+fields and has no preview mode. A visit to a protected route without a session returns to sign-in.
+Each review shows the field in dispute, proposed values with their sources, and the worker’s
+reasoning. The operator records a resolution. The Observability view shows the latest heartbeats,
+run history from agent_runs and queue depth from /admin/overview.
+7.4 Components
+File Responsibility
+pages/PublicBoard.tsx Public listing board
+pages/AdminLogin.tsx Admin sign-in
+pages/AdminReviews.tsx Human review queue
+pages/Observability.tsx Runs, heartbeats, queue depth
+components/OpportunityCard.tsx Listing card + badge
+components/FilterBar.tsx T ype/batch/stream/search filters
+components/NotifyForm.tsx E-mail subscription
+api.ts T yped client for/api/v1
+Table 5: Client structure (React + Vite).
+24
+
+--- PAGE 40 ---
+7.5. INTERFACE SCREENSHOTS
+7.5 Interface screenshots
+Figure 7.1 shows how students browse and filter the public listings. Figures 7.2 and 7.3 show
+the operator’s review and monitoring views. The admin captures show preview data.
+Figure 7.1: Public board with listing totals, category tabs, filters and search.
+25
+
+--- PAGE 41 ---
+CHAPTER 7. WEB CLIENT
+Figure 7.2: Human verification queue in offline preview. The review shows a disputed field, the worker’s
+note and the proposed values.
+Figure 7.3: Pipeline observability with sample counts for published listings, pending reviews, agent health
+and pipeline stages.
+26
+
+--- PAGE 42 ---
+CHAPTER 8
+Database Design
+8.1 Overview
+The deployment uses a Neon PostgreSQL database with its own connection pool. The Prisma
+schema defines nine tables. The workers access those tables through the Neon HTTP API.
+8.2 Core tables
+27
+
+--- PAGE 43 ---
+CHAPTER 8. DATABASE DESIGN
+Table Purpose
+opportunities One row per listing, with lifecycle + trust fields
+reviews Human-in-the-loop queue for conflicts
+admins Seeded admin credentials (hashed passwords)
+api_usage Per-request metering, from day one
+policies Runtime key-value policy
+alert_subscriptions E-mail subscriptions with filters
+state_transitions Audit records for listing status and trust changes
+agent_heartbeats Latest heartbeat per agent
+agent_runs One row per agent execution
+Table 6: Database tables.
+28
+
+--- PAGE 44 ---
+8.3. ENTITY RELATIONSHIPS
+8.3 Entity relationships
+A listing can have multiple reviews and state transitions. Each child record refers to one listing
+through its opportunity_id foreign key. Deleting a listing deletes those dependent records.
+Observability matches runs and heartbeats by agent name. Figure 8.1 shows the keys and rela-
+tionships.
+«table»
+reviews
+id: UUID
+{PK}
+opportunity_id: UUID
+{FK}
+field: text
+status: text
+resolved_value: text [0..1]
+resolved_by: text [0..1]
+«table»
+opportunities
+id: UUID
+{PK}
+type: OpportunityType
+title: text
+link: text
+status: text
+verification_status: VerificationStatus
+deadline: timestamp [0..1]
+«table»
+state_transitions
+id: UUID
+{PK}
+opportunity_id: UUID
+{FK}
+field: text
+from_value: text [0..1]
+to_value: text
+actor: text
+created_at: timestamp
+«table»
+admins
+id: UUID
+{PK}
+email: text
+{UQ}
+password_hash: text
+created_at: timestamp
+«table»
+policies
+key: text
+{PK}
+value: text
+updated_at: timestamp
+«table»
+alert_subscriptions
+id: UUID
+{PK}
+email: text
+filters: JSONB
+created_at: timestamp
+«table»
+api_usage
+id: UUID
+{PK}
+key: text [0..1]
+endpoint: text
+created_at: timestamp
+«table»
+agent_heartbeats
+agent: text
+{PK}
+last_run_at: timestamptz
+status: text
+detail: JSONB
+updated_at: timestamptz
+«table»
+agent_runs
+id: UUID
+{PK}
+agent: text
+started_at: timestamptz
+finished_at: timestamptz [0..1]
+status: text
+detail: JSONB
+0..*
+1
+1
+0..*
+agent
+match
+{PK} Primary key     {FK} Foreign key     {UQ} Unique     [0..1] Optional attribute
+Figure 8.1: Database schema in UML class notation with selected typed attributes. Solid associations
+show the foreign keys to opportunities with their multiplicities. The dashed dependency
+shows the dashboard’s lookup by agent name.
+8.4 The opportunities table
+Theopportunities table stores a record for each listing.
+29
+
+--- PAGE 45 ---
+CHAPTER 8. DATABASE DESIGN
+• id is a UUID primary key. The type field is an enum ( job, internship, hackathon,
+event).
+• title, company (hiring org; organiser for hackathons and events), link (required direct
+application or registration URL).
+• source andsource_url: where the row was found.
+• location, description, reward (“INR 14 LPA”, “INR 12k/month”, “$12,000 prize
+pool”).
+• batches integer array andstreams text array. Both fields store only explicitly supported
+values.
+• deadline,deadline_kind (fixed,rolling,unknown),starts_at,ends_at.
+• The JSONB eligibility field stores conditions. Review flags use a text array ( flags)
+and a reason (flag_reason).
+• Lifecycle status defaults to found. Verification status defaults to pending.
+• last_verified_at andnext_check_at drive the maintainer’s schedule.
+The database uses a unique constraint on (type, company, title, link)to prevent exact
+duplicates. Indexes on deadline, status and verification_status support queries from
+the board and the workers.
+8.5 Audit and review
+A PostgreSQL trigger logs each change to a listing’s status or verification status. Records in
+state_transitions include the listing, field, previous and new values, actor and reason. The
+reviews table holds one row per conflict, with the disputed field, candidate values and sources,
+and the worker’s reasoning. The operator adds the resolution to that row.
+8.6 Runs and heartbeats
+Each row in agent_runs holds the agent name, start and finish times, status and JSON details.
+Observability displays those rows in order. A separate table stores only the latest heartbeat per
+agent. The watchdog uses it for the check described in Chapter 4.
+30
+
+--- PAGE 46 ---
+8.7. SECURITY MODEL
+8.7 Security model
+Server-side configuration supplies the database connection string. The client configuration con-
+tains the API origin. The database stores the admin password hash. The Prisma migrations
+include the initial schema and the later heartbeat and run tables.
+31
+
+--- PAGE 47 ---
+CHAPTER 9
+Deployment, Operations and Observability
+9.1 Deployment
+Nginx sends requests for the frontend and API hostnames to their respective services on the
+Azure VM. PM2 serves the Vite build and runs Express. Server environment variables supply
+the database connection string and JWT secret. The frontend build gets the API hostname from
+VITE_API_URL.
+After a deployment, the operator can call GET /health, request a listing from the board and
+open the admin sign-in page. Repeating the listing request can confirm a cache hit. The API
+publishes its manifest at /api/v1/llms.txt.
+9.2 Operations
+An operator deploys the frontend and API on the Azure VM. The workers run on separate sched-
+ules for capture, verification, maintenance and heartbeat monitoring. When a run appears to be
+missing, the operator can compare the schedule in Table 2 with the active scheduler.
+32
+
+--- PAGE 48 ---
+9.3. OBSERVABILITY
+9.3 Observability
+agent_runs records when each run starts and how it ends. The heartbeat table retains the
+latest run per agent. The watchdog reads those heartbeats and reports how late an agent is. The
+/admin/stats endpoint reports queue depths. A growing found queue, for example, gives an
+operator a reason to check whether the verifier is keeping up.
+9.4 Failure handling
+A scout run can time out when its browser stops returning results. The run record then closes
+with an error, and the last successful heartbeat is kept. The dashboard can mark the agent as
+down once that heartbeat is old enough.
+Early run tables omitted passes that found nothing. The watchdog once reported the events scout
+as down for weeks even though it was running. Operators now check the run records before
+acting on a down flag. The database or findings file is also used to confirm what a worker says
+it collected.
+33
+
+--- PAGE 49 ---
+CHAPTER 10
+Results and Discussion
+10.1 Live deployment
+On 15 November 2026, the deployed API returned a total of 1,721 published listings, including
+982 marked verified (57.1%) and 170 with deadlines in the following seven days. The request
+used page 1 with 18 results per page, sorted by newest, with no eligibility or text filters ( /api/
+v1/opportunities?page=1&pageSize=18&sort=newest). The totals apply to all matching
+listings at the time of the request.
+T wo identical requests returnedX-Cache: MISS and thenX-Cache: HIT . The second response
+confirmed reuse for that query. The check did not measure response times or a sustained hit rate.
+10.2 Throughput
+Project notes dated 14 November 2026 report more than 1,050 Reddit sweeps, more than 220
+researcher batches and seven full rotations of the Fortune 500 list, with 20 groups per rotation.
+One Devpost run ingested 50 hackathons. The researcher recorded well over a hundred sources,
+including career pages for public-sector banks and several fellowship programmes.
+The notes describe the verifier and maintainer running at 15-minute intervals through the day.
+In a typical maintainer pass, about a dozen listings were rechecked, a handful went to review,
+34
+
+--- PAGE 50 ---
+10.3. VERIFICATION OUTCOMES
+and none were expired or promoted.
+10.3 Verification outcomes
+Some application pages stopped working within minutes of a successful check. The pipeline
+flagged dead links, and the audit trail helped find a defect in how the ingest path handled dupli-
+cates. The promotion rules described in Chapter 4 exclude flagged rows from automatic promo-
+tion. The public snapshot cannot show how often an incorrect promotion occurred over the life
+of the system.
+10.4 Discussion: what broke, and what it taught
+The Reddit and events scouts hit repeated browser timeouts in November 2026. A stalled run
+was closed as an error, and the dashboard kept the last good heartbeat. On another occasion, a
+family of Workday tenants blocked the build machine’s IP . The simultaneous refusals pointed to
+an access problem across those tenants.
+The portal scout once returned sentences that the original posting did not contain. Workers now
+compare quotations against the fetched text. A separate deduplication bug collapsed 55 distinct
+postings because the key used type, company and title without the application link. The fix
+normalises the fields first and includes the link in the key. The worker learning.md files record
+these incidents and fixes.
+35
+
+--- PAGE 51 ---
+References
+[1] Express. Express 4.x api reference. https://expressjs.com/en/4x/api.html, 2025. Minimal
+web framework for Node.js.
+[2] C. Huyen. AI Engineering: Building Applications with Foundation Models . O’Reilly Media, 2025.
+[3] Meta. Introducing Muse: The world’s first personal AI agent built for everyone. https://about.
+fb.com/news/2026/09/introducing-muse-personal-ai-agent/ , 2026.
+[4] Meta. React documentation. https://react.dev, 2026. JavaScript library for user interfaces.
+[5] Meta Superintelligence Labs. Introducing Muse Spark: Scaling towards personal superintelligence.
+https://ai.meta.com/blog/introducing-muse-spark-msl/ , 2026.
+[6] Microsoft. T ypescript handbook. https://www.typescriptlang.org/docs/handbook, 2026.
+T yped superset of JavaScript.
+[7] Neon. Neon documentation: Serverless postgres. https://neon.tech/docs, 2026. Managed
+Postgres with HTTP API and branching.
+[8] Node.js. Node.js documentation. https://nodejs.org/en/docs, 2026. JavaScript runtime.
+[9] PostgreSQL Global Development Group. Postgresql 17 documentation. https://www.
+postgresql.org/docs, 2025. Row-level locking, triggers, JSONB, trigram similarity.
+[10] Prisma. Prisma documentation. https://www.prisma.io/docs, 2026. ORM for Node.js and
+T ypeScript, PostgreSQL provider.
+[11] Vite. Vite guide. https://vite.dev/guide, 2026. Next-generation front-end tooling.
+36
+
+--- PAGE 52 ---
+APPENDIX A
+Agent context file tree
+agents/context/
+global/
+rules.md (immutable system policy)
+memory.md (shared knowledge, promoted by main agent)
+portal-scout/ reddit-scout/ linkedin-scout/
+devpost-scout/ fortune500-scout/ event-scout/
+researcher/ verifier/ maintainer/
+soul.md rules.md memory.md learning.md
+37
+
+--- PAGE 53 ---
+APPENDIX B
+Database tables
+opportunities one row per listing (lifecycle + trust badge)
+reviews human-in-the-loop queue for conflicts
+admins seeded admin credentials (bcrypt hashes)
+api_usage per-request metering, from day one
+policies runtime key-value policy
+alert_subscriptions e-mail subscriptions with filters
+state_transitions listing status and trust history
+agent_heartbeats latest heartbeat per agent
+agent_runs one row per agent execution
+38
+
+--- PAGE 54 ---
+APPENDIX C
+API quick reference
+GET /health
+GET /api/v1/opportunities?type=&batch=&stream=&closingSoon=&q=
+GET /api/v1/opportunities/:id
+GET /api/v1/policies
+POST /api/v1/reports {opportunityId, reason}
+POST /api/v1/notify {email, filters}
+GET /api/v1/agents
+GET /api/v1/llms.txt
+GET /api/v1/llms-full.txt
+GET /api/v1/openapi.json
+GET|POST /api/v1/mcp
+POST /api/v1/admin/login {email, password}
+GET /api/v1/admin/reviews?status=open
+POST /api/v1/admin/reviews/:id/resolve
+GET /api/v1/admin/opportunities?status=&q=
+PATCH /api/v1/admin/opportunities/:id
+GET|PUT /api/v1/admin/policies[/:key]
+GET /api/v1/admin/stats
+GET /api/v1/admin/overview
+GET /api/v1/admin/agents
+GET /api/v1/admin/runs
+GET /api/v1/admin/transitions
+39
+
+--- PAGE 55 ---
+APPENDIX D
+Publications related to report work
+No publications have resulted from this work to date.
+40
+
+--- PAGE 56 ---
+APPENDIX E
+Biographical sketch
+Aditya Kumar
+Department of Computer Science and Engineering
+National Institute of Technology, Agartala, Tripura, India
+E-mail: adityakumar.mca.nita@gmail.com
+Contact No. +91-9693697350
+• Postgraduate degree. Master of Computer Applications (2024–2027), NIT Agartala. CGPA of
+9.16 (department rank 3).
+• Internships. AI Engineering Intern at Accenture (May–July 2026) and Software Engineering
+Intern at CloudPlayStation (August 2025–January 2026).
+• Projects and entrepreneurship. Builder of Opportunity Engine and founder of Bhadauria E-
+commerce Pvt. Ltd. (pre-launch).
+41

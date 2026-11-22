@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+\dn{app}{input}{5}{0}{8.8}{\textbf{From 2.0 Record telemetry}\\Saved event + associated account}
+\dn{app}{dispatch}{5}{-2.2}{8.8}{\textbf{3.1 Dispatch rule evaluation}\\\scriptsize Evaluate all six rules independently; one event can yield several candidates}
+\dn{check}{failed}{0}{-5}{3.4}{\textbf{3.2 Failed login}\\\scriptsize FAILED status\\20 / LOW}
+\dn{check}{time}{5}{-5}{3.4}{\textbf{3.3 Unusual time}\\\scriptsize Hour 00:00--04:59\\25 / LOW}
+\dn{check}{inactive}{10}{-5}{3.4}{\textbf{3.4 Inactive user}\\\scriptsize active = false\\80 / CRITICAL}
+\dn{check}{ip}{0}{-8.1}{3.4}{\textbf{3.5 New IP}\\\scriptsize Prior events exist;\\no matching other IP\\40 / MEDIUM}
+\dn{check}{device}{5}{-8.1}{3.4}{\textbf{3.6 New device}\\\scriptsize No matching other\\device (ignore case)\\30 / MEDIUM}
+\dn{check}{brute}{10}{-8.1}{3.4}{\textbf{3.7 Brute force}\\\scriptsize Failed; count $\geq5$\\after event time - 10 min\\70 / HIGH}
+\dn{store}{logs}{5}{-10.8}{8.8}{\textbf{D2 Login logs} [read by 3.5, 3.6, 3.7]\\\scriptsize User history and qualifying failed-attempt count}
+\dn{alert}{persist}{5}{-13.2}{8.8}{\textbf{3.8 Deduplicate and persist each candidate}\\\scriptsize Check (user ID, rule type, event ID); save only if absent}
+\dn{store}{anomaly}{5}{-15.6}{8.8}{\textbf{D3 Anomalies}\\\scriptsize User/event links, type, description, weight, severity, detectedAt}
+\draw[dep](input)--(dispatch);
+\foreach \n in {failed,time,inactive}{\draw[dep](dispatch.south)--(\n.north);}
+\draw[dep](dispatch.west)--(-2.5,-2.2)--(-2.5,-6.8)--(0,-6.8)--(ip.north);
+\draw[dep](dispatch.east)--(12.5,-2.2)--(12.5,-6.8)--(10,-6.8)--(brute.north);
+\draw[dep](dispatch.south)--(5,-3.3)--(7.4,-3.3)--(7.4,-6.7)--(5,-6.7)--(device.north);
+\draw[ret](logs.north west)--(ip.south);
+\draw[ret](logs.north)--(device.south);
+\draw[ret](logs.north east)--(brute.south);
+\draw[dep](failed.west)--(-3.0,-5)--(-3.0,-13.2)--(persist.west);
+\draw[dep](inactive.east)--(13,-5)--(13,-13.2)--(persist.east);
+\draw[dep](time.west)--(2.4,-5)--(2.4,-6.3)--(-3,-6.3);
+\node[edge,rotate=90] at (-3,-10.5) {Triggered candidates};
+\draw[dep](ip.west)--(-3,-8.1);\draw[dep](device.east)--(7.4,-8.1)--(7.4,-9.5)--(13,-9.5);\draw[dep](brute.east)--(13,-8.1);
+\draw[dep](persist)--node[edge,right]{Insert anomaly}(anomaly);
+\draw[ret](anomaly.east)--(10.5,-15.6)--(10.5,-13.2)--node[edge,above]{Existing combination}(persist.east);
+\end{tikzpicture}

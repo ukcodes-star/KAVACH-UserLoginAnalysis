@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+\draw[boundary] (1.5,1.7) rectangle (12.2,-12.6);
+\node[font=\small\bfseries,anchor=west,text=KBlue] at (1.8,1.3) {KAVACH application};
+\actor{user}{-.3}{0}{Account user}
+\actor{admin}{14}{0}{Administrator}
+\actor{model}{14}{-10.5}{External model\\service}
+\foreach \n/\x/\y/\t in {login/4.3/0/Register or log in,personal/4.3/-2.4/View own logs and risk,own/4.3/-4.8/Inspect own anomalies,explain/4.3/-7.2/Explain own anomaly,workflow/4.3/-9.6/Run AI workflow,global/9.4/0/View global dashboard,directory/9.4/-2.4/Manage accounts,audit/9.4/-4.8/Review audit records,simulate/9.4/-7.2/Insert simulated event,summary/9.4/-9.6/Generate global summary}{
+ \draw[draw=KBlue,fill=KBlue!7] (\x,\y) ellipse (2.05cm and .74cm);
+ \node[font=\small,align=center,text width=3.4cm] (\n) at (\x,\y) {\t};
+}
+\draw[assoc](user.east)--(login.west);
+\draw[assoc](user.east)--(personal.west);
+\draw[assoc](user.east)--(own.west);
+\draw[assoc](user.east)--(explain.west);
+\draw[assoc](user.east)--(workflow.west);
+\draw[-{Triangle[open,length=3mm]},draw=KGray] (14,.7)--(14,2.6)--node[edge,above]{specializes Account user}(-.3,2.6)--(-.3,.7);
+\foreach \n in {global,directory,audit,simulate,summary}{\draw[assoc](admin.west)--(\n.east);}
+\draw[assoc,draw=KPurple] (model.west)--(summary.south east);
+\draw[assoc,draw=KPurple] (model.east)--(15.2,-10.5)--(15.2,-13.5)--(4.3,-13.5)--(workflow.south);
+\dn{note}{note}{6.8}{-15}{12.5}{\scriptsize Admin inherits ordinary authenticated use cases. Associations show intended direct-API scope; USER access to AI tools must not be interpreted as permission for administrative tool actions. Live model participation is optional.}
+\end{tikzpicture}
